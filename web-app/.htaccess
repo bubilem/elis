@@ -1,0 +1,19 @@
+# deny access to directory listing
+Options -Indexes 
+
+# disable access to files (ini, json)
+<Files ~ "\.(ini|json)$">
+   order deny,allow
+   deny from all
+</Files>
+
+# rewrite engine on
+RewriteEngine On
+
+# disabling the contents of the files folder
+RewriteRule ^(.*/)?files/.* - [F]
+
+# redirecting to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L,QSA]

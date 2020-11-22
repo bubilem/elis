@@ -1,0 +1,10 @@
+{
+  "LD": "loading",
+  "UL": "unloading",
+  "WT": "waiting",
+  "OW": "on-way",
+  "RT": "resting",
+  "RF": "refueling",
+  "AC": "accident",
+  "OT": "other"
+}

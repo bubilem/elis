@@ -1,0 +1,32 @@
+{
+  "C20": {
+    "name": "Container 20 ft",
+    "standard": "ISO 1 C",
+    "lenght": "6.058",
+    "width": "2.438",
+    "height": "2.591",
+    "max_gross_weight": "30000",
+    "max_net_load": "27.800",
+    "volume": "33.1"
+  },
+  "C40": {
+    "name": "Container 40 ft",
+    "standard": "ISO 1 A",
+    "lenght": "12.192",
+    "width": "2.438",
+    "height": "2.591",
+    "max_gross_weight": "30000",
+    "max_net_load": "26.199",
+    "volume": "67.5"
+  },
+  "EP1": {
+    "name": "EUR-pallet",
+    "standard": "ISO 1",
+    "lenght": "1.200",
+    "width": "0.800",
+    "height": "",
+    "max_gross_weight": "1525",
+    "max_net_load": "1500",
+    "volume": ""
+  }
+}

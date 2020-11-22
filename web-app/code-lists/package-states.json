@@ -1,0 +1,7 @@
+{
+  "AC": "accepted (start state)",
+  "TR": "transported - in vehicle",
+  "WT": "waiting - ready for transport",
+  "DS": "destroyed (end state)",
+  "FR": "forwarded (end state)"
+}
