@@ -1,7 +1,8 @@
 {
-  "AC": "accepted (start state)",
-  "TR": "transported - in vehicle",
-  "WT": "waiting - ready for transport",
-  "DS": "destroyed (end state)",
-  "FR": "forwarded (end state)"
+  "ACP": "accepted (start state)",
+  "TRN": "transported - in vehicle",
+  "WTG": "waiting - ready for transport",
+  "DMG": "damaged",
+  "DST": "destroyed (end state)",
+  "FRW": "forwarded (end state)"
 }

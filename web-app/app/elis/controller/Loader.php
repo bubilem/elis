@@ -10,7 +10,7 @@ class Loader
 {
 
     /**
-     * Undocumented function
+     * Automatic loads the class files
      *
      * @param string $className
      * @return void

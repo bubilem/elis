@@ -1,10 +1,10 @@
 {
-  "LD": "loading",
-  "UL": "unloading",
-  "WT": "waiting",
-  "OW": "on-way",
-  "RT": "resting",
-  "RF": "refueling",
-  "AC": "accident",
-  "OT": "other"
+  "LOD": "loading",
+  "UNL": "unloading",
+  "WTG": "waiting",
+  "ONW": "on-way",
+  "RST": "resting",
+  "RFL": "refueling",
+  "ACD": "accident",
+  "OTH": "other"
 }

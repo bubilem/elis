@@ -1,7 +1,7 @@
 {
-  "AD": "administrator",
-  "MN": "manager",
-  "CO": "controller",
-  "DR": "driver",
-  "ND": "next driver"
+  "ADM": "administrator",
+  "MNG": "manager",
+  "CNT": "controller",
+  "DRV": "driver",
+  "CDR": "co-driver"
 }
