@@ -35,4 +35,16 @@ class Router
             }
         }
     }
+
+    /**
+     * Redirect the page to the specific uri
+     *
+     * @return void
+     */
+    public static function redirect(string $uri)
+    {
+        header("Location: " . (strpos($uri, 'http') === 0 ? '' : Conf::get('URL_BASE') . Conf::get('URL_DIR')) . $uri);
+        header("Connection: close");
+        exit;
+    }
 }

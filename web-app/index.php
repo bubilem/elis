@@ -22,5 +22,5 @@ spl_autoload_register('elis\controller\Loader::loadClass');
 /* Configuration file loading */
 elis\utils\Conf::load('conf.ini');
 
-/* Router start the application */
+/* Router starts the application */
 elis\controller\Router::route(filter_input(INPUT_SERVER, 'REQUEST_URI'));
