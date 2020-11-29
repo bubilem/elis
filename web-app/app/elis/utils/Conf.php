@@ -15,7 +15,7 @@ class Conf
      * Configuration ini file loading
      *
      * @param string $filename source conf file (path and filename)
-     * @return bool
+     * @return bool true when success, otherwise false
      */
     public static function load(string $filename): bool
     {

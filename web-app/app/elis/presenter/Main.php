@@ -17,7 +17,7 @@ abstract class Main
     protected $params;
 
     /**
-     * Contructor
+     * Constructor
      *
      * @param array $params
      */

@@ -8,7 +8,7 @@ use elis\utils\Conf;
  * MySQL driver
  * @version 0.0.1 201122
  */
-class MySQL
+class MySQL implements Driver
 {
     /**
      *  Object which represents the connection to a MySQL Server, otherwise null.
@@ -44,7 +44,7 @@ class MySQL
             Conf::get("DB_PASS"),
             Conf::get("DB_DTBS")
         )) !== false) {
-            self::query("SET CHARACTER SET UTF8");
+            self::query(new Query("SET CHARACTER SET UTF8"));
         } else {
             self::$link = null;
         }
@@ -73,12 +73,12 @@ class MySQL
     /**
      * Handles sending a query to the database
      *
-     * @param string $query
+     * @param Query $query
      * @return mixed result
      */
-    public static function query(string $query)
+    public static function query(Query $query)
     {
-        self::$lastResult = mysqli_query(self::$link, $query);
+        self::$lastResult = mysqli_query(self::$link, $query->toSql());
         if (self::$lastResult === false) {
             self::$lastError = mysqli_error(self::$link);
         } else {
