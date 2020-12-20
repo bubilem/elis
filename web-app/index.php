@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 
 /* UTF-8 string encoding */

@@ -17,11 +17,12 @@ class Update extends Query
      */
     private $values;
 
-    public function __construct(string $tableName = '', array $values = [], string $pkValue = '')
+    public function __construct(string $tableName = '', array $values = [], string $attribVal = '', string $attribOper = '=')
     {
         $this->setTableName($tableName);
-        $this->setPkName('id');
-        $this->setPkValue($pkValue);
+        $this->setAttribName('id');
+        $this->setAttribVal($attribVal);
+        $this->setAttribOper($attribOper);
         $this->setValues($values);
     }
 
@@ -54,6 +55,20 @@ class Update extends Query
      */
     public function toSql(): string
     {
-        return 'UPDATE...';
+        if (!$this->getTableName() || !$this->getValues() || !$this->getAttribName() || !$this->getAttribVal()) {
+            return '';
+        }
+        $values = [];
+        foreach ($this->getValues() as $aName => $aVal) {
+            $values[] = $aName . " = '" . $aVal . "'";
+        }
+        $whereCondition = '';
+        if ($this->getAttribName() && $this->getAttribOper() && $this->getAttribVal()) {
+            $whereCondition = $this->getAttribName() . " " . $this->getAttribOper() .
+                " '" . $this->getAttribVal() . "'";
+        }
+        return "UPDATE " . $this->getTableName() . " SET " .
+            implode(", ", array_values($values)) .
+            ($whereCondition ? " WHERE " . $whereCondition : "");
     }
 }

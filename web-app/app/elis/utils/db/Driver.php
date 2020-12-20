@@ -9,7 +9,7 @@ namespace elis\utils\db;
 interface Driver
 {
     /**
-     * Connect to MySQL DBMS
+     * Connect to DBMS
      *
      * @return void
      */

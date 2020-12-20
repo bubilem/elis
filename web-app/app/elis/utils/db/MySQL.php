@@ -78,6 +78,9 @@ class MySQL implements Driver
      */
     public static function query(Query $query)
     {
+        if (!self::isConnected()) {
+            self::connect();
+        }
         self::$lastResult = mysqli_query(self::$link, $query->toSql());
         if (self::$lastResult === false) {
             self::$lastError = mysqli_error(self::$link);
@@ -121,5 +124,16 @@ class MySQL implements Driver
     public static function getLastError(): string
     {
         return self::$lastError;
+    }
+
+
+    /**
+     * Gets last insert id
+     *
+     * @return string
+     */
+    public static function getLastInsertId(): string
+    {
+        return mysqli_insert_id(self::$link);
     }
 }

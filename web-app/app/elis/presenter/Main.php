@@ -2,6 +2,9 @@
 
 namespace elis\presenter;
 
+use elis\utils\db;
+use elis\utils\db\MySQL;
+
 /**
  * Main presenter
  * @version 0.0.1 201121 created
@@ -24,6 +27,16 @@ abstract class Main
     public function __construct(array $params)
     {
         $this->params = $params;
+    }
+
+    /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        if (MySQL::isConnected()) {
+            db\MySQL::close();
+        }
     }
 
     /**

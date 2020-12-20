@@ -9,11 +9,12 @@ namespace elis\utils\db;
 class Delete extends Query
 {
 
-    public function __construct(string $tableName = '', string $pkValue = '')
+    public function __construct(string $tableName = '', string $attribVal = '', string $attribOper = '=')
     {
         $this->setTableName($tableName);
-        $this->setPkName('id');
-        $this->setPkValue($pkValue);
+        $this->setAttribName('id');
+        $this->setAttribVal($attribVal);
+        $this->setAttribOper($attribOper);
     }
 
     /**
@@ -23,6 +24,14 @@ class Delete extends Query
      */
     public function toSql(): string
     {
-        return 'DELETE...';
+        if (!$this->getTableName()) {
+            return '';
+        }
+        $whereCondition = '';
+        if ($this->getAttribName() && $this->getAttribOper() && $this->getAttribVal()) {
+            $whereCondition = $this->getAttribName() . " " . $this->getAttribOper() .
+                " '" . $this->getAttribVal() . "'";
+        }
+        return "DELETE FROM " . $this->getTableName() . ($whereCondition ? " WHERE " . $whereCondition : "");
     }
 }

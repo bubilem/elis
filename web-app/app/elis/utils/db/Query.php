@@ -24,25 +24,32 @@ class Query
     protected $queryArgs;
 
     /**
-     * Database primary key name
-     *
-     * @var string
-     */
-    protected $pkName;
-
-    /**
-     * Primary key value
-     *
-     * @var string
-     */
-    private $pkValue;
-
-    /**
      * Database table name
      *
      * @var string
      */
     protected $tableName;
+
+    /**
+     * Database attribute name
+     *
+     * @var string
+     */
+    protected $attribName;
+
+    /**
+     * Database attribute value
+     *
+     * @var string
+     */
+    protected $attribVal;
+
+    /**
+     * Attribute logical operation for records selection
+     *
+     * @var string
+     */
+    private $attribOper;
 
     public function __construct(string $queryString = '', array $queryArgs = [])
     {
@@ -56,7 +63,7 @@ class Query
      *
      * @return string
      */
-    public function getQueryString()
+    public function getQueryString(): string
     {
         return $this->queryString;
     }
@@ -67,7 +74,7 @@ class Query
      * @param string $queryString  Query string
      * @return self
      */
-    public function setQueryString(string $queryString): Query
+    public function setQueryString(string $queryString)
     {
         $this->queryString = $queryString;
         return $this;
@@ -78,7 +85,7 @@ class Query
      *
      * @return array
      */
-    function getArgs(): array
+    public function getArgs(): array
     {
         return $this->queryArgs;
     }
@@ -88,7 +95,7 @@ class Query
      *
      * @return self
      */
-    function setArgs(array $args)
+    public function setArgs(array $args)
     {
         $this->queryArgs = $args;
         return $this;
@@ -107,7 +114,7 @@ class Query
     /**
      * Set database table name
      *
-     * @param string $tableName  Database table name
+     * @param string $tableName  
      * @return self
      */
     public function setTableName(string $tableName)
@@ -117,50 +124,72 @@ class Query
     }
 
     /**
-     * Get database primary key name
+     * Get database attribute name
      *
      * @return string
      */
-    public function getPkName(): string
+    public function getAttribName(): string
     {
-        return $this->pkName;
+        return $this->attribName;
     }
 
     /**
-     * Set database primary key name
+     * Set database attribute name
      *
-     * @param string $pkName  Database primary key name
+     * @param string $attribName  
      * @return self
      */
-    public function setPkName(string $pkName)
+    public function setAttribName(string $attribName)
     {
-        $this->pkName = $pkName;
+        $this->attribName = $attribName;
         return $this;
     }
 
     /**
-     * Get primary key value
+     * Get attribute value
      *
      * @return string
      */
-    public function getPkValue(): string
+    public function getAttribVal(): string
     {
-        return $this->pkValue;
+        return $this->attribVal;
     }
 
     /**
-     * Set primary key value
+     * Set attribute value
      *
-     * @param string $pkValue  Primary key value
+     * @param string $attribVal  
      * @return self
      */
-    public function setPkValue(string $pkValue): Update
+    public function setAttribVal(string $attribVal)
     {
-        $this->pkValue = $pkValue;
+        $this->attribVal = $attribVal;
         return $this;
     }
 
+    /**
+     * Get attribute logical operation
+     *
+     * @return string
+     */
+    public function getAttribOper(): string
+    {
+        return $this->attribOper;
+    }
 
+    /**
+     * Set attribute logical operation
+     *
+     * @param string $attribVal  
+     * @return self
+     */
+    public function setAttribOper(string $attribOper)
+    {
+        if (in_array($attribOper, ['=', '!=', '<>', '<', '>', '<=', '>=', 'LIKE'])) {
+            $this->attribOper = $attribOper;
+        }
+        return $this;
+    }
 
     /**
      * Render query sql string
@@ -177,7 +206,7 @@ class Query
      *
      * @return string
      */
-    function __toString()
+    function __toString(): string
     {
         return $this->toSql();
     }

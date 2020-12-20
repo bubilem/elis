@@ -8,6 +8,7 @@ namespace elis\model;
  */
 abstract class Main
 {
+
     /**
      * All model db data 
      *
@@ -20,7 +21,7 @@ abstract class Main
      *
      * @var string
      */
-    protected static $pkName = '';
+    protected static $pkName = 'id';
 
     /**
      * Database table name
@@ -49,7 +50,7 @@ abstract class Main
      *
      * @return bool true if success, otherwise false
      */
-    public abstract function del(): bool;
+    public abstract function delete(): bool;
 
     /**
      * Set value by key to model data
@@ -60,7 +61,11 @@ abstract class Main
      */
     public function setData($key, $value)
     {
-        $this->data[$key] = $value;
+        if ($value !== null) {
+            $this->data[$key] = $value;
+        } else {
+            unset($this->data[$key]);
+        }
     }
 
     /**
@@ -71,6 +76,29 @@ abstract class Main
      */
     public function getData($key)
     {
-        return isset($this->data[$key]) ? $this->data[$key] : false;
+        return isset($this->data[$key]) ? $this->data[$key] : null;
+    }
+
+    /**
+     * Dynamic get... set... clr... method service
+     *
+     * @param string $name the name of the called method
+     * @param array $arguments parameters of the called method
+     * @return string|false|self string on get, false on error, otherwise self object
+     */
+    public function __call($name, $arguments)
+    {
+        $typeOfMethod = strtolower(substr($name, 0, 3));
+        $name = strtolower(substr($name, 3));
+        switch ($typeOfMethod) {
+            case 'set':
+                if (isset($arguments[0])) {
+                    $this->setData($name, $arguments[0]);
+                }
+                return $this;
+            case 'get':
+                return $this->getData($name);
+        }
+        return false;
     }
 }

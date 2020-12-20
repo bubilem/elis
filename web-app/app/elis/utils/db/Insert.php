@@ -46,12 +46,35 @@ class Insert extends Query
     }
 
     /**
-     * Render insert sql query to string
+     * Remove null values from data array
+     *
+     * @return self
+     */
+    public function remNullValues()
+    {
+        if (is_array($this->values) && !empty($this->values)) {
+            foreach ($this->values as $aName => $aValue) {
+                if ($aValue === null) {
+                    unset($this->values[$aName]);
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Render INSERT sql query to string
      *
      * @return string
      */
     public function toSql(): string
     {
-        return 'INSERT...';
+        if (!$this->getTableName() || empty($this->values)) {
+            return '';
+        }
+        $this->remNullValues();
+        return "INSERT INTO " . $this->getTableName() . " (" .
+            implode(", ", array_keys($this->values)) . ") VALUES ('" .
+            implode("', '", array_values($this->values)) . "')";
     }
 }
