@@ -128,12 +128,22 @@ class MySQL implements Driver
 
 
     /**
-     * Gets last insert id
+     * Returns last insert id
      *
      * @return string
      */
     public static function getLastInsertId(): string
     {
         return mysqli_insert_id(self::$link);
+    }
+
+    /**
+     * Returns the number of rows affected by the last query
+     *
+     * @return int
+     */
+    public static function getAffectedRows(): int
+    {
+        return mysqli_affected_rows(self::$link);
     }
 }

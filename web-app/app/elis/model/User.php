@@ -3,7 +3,6 @@
 namespace elis\model;
 
 use elis\utils\db;
-use elis\utils\db\Insert;
 
 /**
  * User model class
@@ -27,13 +26,12 @@ class User extends Main
      */
     public function load($pk): bool
     {
-        $query = (new db\Select())->setSelect("*")->setFrom('user')->setWhere('id = ' . intval($pk));
-        if (!db\MySQL::query($query) || db\MySQL::getLastError()) {
-            return false;
-        }
-        $result = db\MySQL::fetch();
-        if (is_array($result) && !empty($result)) {
-            $this->data = $result;
+        $result = (new db\Select())
+            ->setSelect("*")->setFrom('user')->setWhere('id = ' . intval($pk))
+            ->run();
+        if (isset($result[0]) && is_array($result[0]) && !empty($result[0])) {
+            $this->data = $result[0];
+            return true;
         }
         return false;
     }
@@ -52,15 +50,14 @@ class User extends Main
             'surname' => $this->getSurname()
         ];
         if ($this->getId()) {
-            $query = new db\Update('user', $data, $this->getId());
-        } else {
-            $query = new db\Insert('user', $data);
-        }
-        if (db\MySQL::query($query) && !db\MySQL::getLastError()) {
-            if ($query instanceof Insert) {
-                $this->setId(db\MySQL::getLastInsertId());
+            if ((new db\Update('user', $data, $this->getId()))->run()) {
+                return true;
             }
-            return true;
+        } else {
+            if ($newId = (new db\Insert('user', $data))->run()) {
+                $this->setId($newId);
+                return true;
+            }
         }
         return false;
     }
@@ -73,8 +70,7 @@ class User extends Main
     public function delete(): bool
     {
         if ($this->getId()) {
-            $query = new db\Delete('user', $this->getId());
-            if (db\MySQL::query($query) && !db\MySQL::getLastError()) {
+            if ((new db\Delete('user', $this->getId()))->run()) {
                 $this->data = [];
                 return true;
             }

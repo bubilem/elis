@@ -3,7 +3,6 @@
 namespace elis\presenter;
 
 use elis\utils\db;
-use elis\utils\db\MySQL;
 
 /**
  * Main presenter
@@ -34,7 +33,7 @@ abstract class Main
      */
     public function __destruct()
     {
-        if (MySQL::isConnected()) {
+        if (db\MySQL::isConnected()) {
             db\MySQL::close();
         }
     }

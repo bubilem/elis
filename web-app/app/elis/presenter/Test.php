@@ -28,10 +28,9 @@ class Test extends Main
         echo new db\Delete('user', 5);
         echo "<br>";
         $q = new db\Select();
-        $q->setSelect("*")->setFrom("users")->setWhere("id = 5");
-        $q->setLimit(5);
-        $q->setSelect('name, surname');
+        $q->setSelect("*")->setFrom("user")->setWhere("id = 5");
         echo $q;
+        var_dump($q->run());
 
         echo "<h2>Load existing user</h2>";
         $u = new model\User(1);
@@ -47,7 +46,7 @@ class Test extends Main
         var_dump($v, $v->getId());
 
         echo "<h2>Del user</h2>";
-        $v = new model\User(10);
+        $v = new model\User(24);
         var_dump($v->delete());
         var_dump($v, $v->getId());
     }

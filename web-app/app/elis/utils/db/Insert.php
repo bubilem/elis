@@ -77,4 +77,12 @@ class Insert extends Query
             implode(", ", array_keys($this->values)) . ") VALUES ('" .
             implode("', '", array_values($this->values)) . "')";
     }
+
+    public function run()
+    {
+        if (MySQL::query($this) && !MySQL::getLastError()) {
+            return MySQL::getLastInsertId();
+        }
+        return false;
+    }
 }

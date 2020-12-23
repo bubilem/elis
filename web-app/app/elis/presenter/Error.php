@@ -3,7 +3,6 @@
 namespace elis\presenter;
 
 use elis\utils;
-use elis\utils\Conf;
 
 /**
  * Error presenter

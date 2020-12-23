@@ -71,4 +71,12 @@ class Update extends Query
             implode(", ", array_values($values)) .
             ($whereCondition ? " WHERE " . $whereCondition : "");
     }
+
+    public function run()
+    {
+        if (MySQL::query($this) && !MySQL::getLastError()) {
+            return MySQL::getAffectedRows();
+        }
+        return false;
+    }
 }

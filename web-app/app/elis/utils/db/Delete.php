@@ -34,4 +34,12 @@ class Delete extends Query
         }
         return "DELETE FROM " . $this->getTableName() . ($whereCondition ? " WHERE " . $whereCondition : "");
     }
+
+    public function run()
+    {
+        if (MySQL::query($this) && !MySQL::getLastError()) {
+            return MySQL::getAffectedRows();
+        }
+        return false;
+    }
 }

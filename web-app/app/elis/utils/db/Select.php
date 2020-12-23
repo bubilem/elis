@@ -97,4 +97,16 @@ class Select extends Query
         }
         return trim($sql) . ';';
     }
+
+    public function run()
+    {
+        if (!MySQL::query($this) || MySQL::getLastError()) {
+            return false;
+        }
+        $result = MySQL::fetchAll();
+        if (is_array($result)) {
+            return $result;
+        }
+        return false;
+    }
 }

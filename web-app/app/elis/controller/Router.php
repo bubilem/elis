@@ -24,7 +24,7 @@ class Router
         if (empty($params[0])) {
             (new presenter\Home([]))->run();
         } else {
-            $classClassName = 'elis\\presenter\\' . ucfirst(array_shift($params));
+            $classClassName = 'elis\\presenter\\' . str_replace('-', '', ucwords(array_shift($params), '-'));
             try {
                 $presenter = new $classClassName($params);
                 if (method_exists($classClassName, 'run')) {

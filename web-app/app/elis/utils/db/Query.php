@@ -210,4 +210,12 @@ class Query
     {
         return $this->toSql();
     }
+
+    public function run()
+    {
+        if (MySQL::query($this) && !MySQL::getLastError()) {
+            return true;
+        }
+        return false;
+    }
 }
