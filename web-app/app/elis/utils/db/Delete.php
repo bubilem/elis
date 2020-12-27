@@ -35,6 +35,11 @@ class Delete extends Query
         return "DELETE FROM " . $this->getTableName() . ($whereCondition ? " WHERE " . $whereCondition : "");
     }
 
+    /**
+     * Send the delete query to MySQL driver to run
+     *
+     * @return int|bool number of affected rows on success, otherwise false
+     */
     public function run()
     {
         if (MySQL::query($this) && !MySQL::getLastError()) {

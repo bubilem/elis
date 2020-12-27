@@ -78,6 +78,11 @@ class Insert extends Query
             implode("', '", array_values($this->values)) . "')";
     }
 
+    /**
+     * Send the insert query to MySQL driver to run
+     *
+     * @return int|bool last insert id on success, otherwise false
+     */
     public function run()
     {
         if (MySQL::query($this) && !MySQL::getLastError()) {

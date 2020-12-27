@@ -98,6 +98,11 @@ class Select extends Query
         return trim($sql) . ';';
     }
 
+    /**
+     * Send the select query to MySQL driver to run
+     *
+     * @return array|bool 2D array on success, otherwise false
+     */
     public function run()
     {
         if (!MySQL::query($this) || MySQL::getLastError()) {

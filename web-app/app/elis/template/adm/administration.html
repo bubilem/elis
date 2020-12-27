@@ -7,9 +7,26 @@
     <link rel="stylesheet" href="www/css/administration.min.css" />
   </head>
   <body>
-    <main>
-      <h1>{title}</h1>
-      {content}
-    </main>
+    <header><h1>ELIS | {title}</h1></header>
+    <div>
+      <nav>
+        <ul>
+          <li><a class="btn" href="dashboard">dashboard</a></li>
+          <li><a class="btn" href="adm-user">users</a></li>
+          <li><a class="btn" href="adm-user">vehicles</a></li>
+          <li><a class="btn" href="adm-user">places</a></li>
+          <li><a class="btn" href="adm-user">packages</a></li>
+          <li><a class="btn" href="adm-user">routes</a></li>
+          <li><a class="btn" href="adm-user">events</a></li>
+        </ul>
+      </nav>
+      <main>{content}</main>
+    </div>
+    <footer>
+      <p>
+        2020 - 2021, ELIS (European Logistic Information System), International school project,
+        Erasmus+, <a href="https://github.com/bubilem/elis">github</a>
+      </p>
+    </footer>
   </body>
 </html>

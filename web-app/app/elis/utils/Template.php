@@ -8,28 +8,106 @@ namespace elis\utils;
  */
 class Template
 {
+    /**
+     * Opening and closing marks for data
+     *
+     * @var array
+     */
     private static $tags = ['{', '}'];
 
+    /**
+     * Template path prefix
+     *
+     * @var string
+     */
     private static $pathPrefix = "app/elis/template/";
 
+    /**
+     * Template filename
+     *
+     * @var string
+     */
     private $filename;
 
+    /**
+     * Data for template
+     *
+     * @var array
+     */
     private $data;
 
-    public function __construct(string $filename)
+    /**
+     * Template constructor
+     *
+     * @param string $filename
+     * @param array $data
+     */
+    public function __construct(string $filename, array $data = [])
     {
-        $this->data = [];
         if (!empty($filename) && file_exists(self::$pathPrefix . $filename)) {
             $this->filename =  $filename;
         }
+        $this->setAllData($data);
     }
 
-    public function setData(string $key, $value)
+    /**
+     * Set all data in one step
+     *
+     * @param array $data
+     * @return Template
+     */
+    public function setAllData(array $data): Template
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Set the data value according to the key
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return Template
+     */
+    public function setData(string $key, $value): Template
     {
         $this->data[$key] = $value;
+        return $this;
     }
 
+    /**
+     * Add the data value according to the key
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return Template
+     */
+    public function addData(string $key, $value): Template
+    {
+        if (isset($this->data[$key])) {
+            $this->data[$key] .= $value;
+        } else {
+            $this->data[$key] = $value;
+        }
+        return $this;
+    }
 
+    /**
+     * Clear all template data
+     *
+     * @return Template
+     */
+    public function clearData(): Template
+    {
+        $this->data = [];
+        return $this;
+    }
+
+    /**
+     * Insert data into the template and generate a string
+     * 
+     * @return string
+     */
     public function render(): string
     {
         if (empty($this->filename)) {
@@ -40,5 +118,15 @@ class Template
             $content = str_replace(self::$tags[0] . $key . self::$tags[1], $val, $content);
         }
         return $content;
+    }
+
+    /**
+     * String representation of the Template
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
     }
 }

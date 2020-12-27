@@ -72,6 +72,11 @@ class Update extends Query
             ($whereCondition ? " WHERE " . $whereCondition : "");
     }
 
+    /**
+     * Send the update query to MySQL driver to run
+     *
+     * @return int|bool number of affected rows on success, otherwise false
+     */
     public function run()
     {
         if (MySQL::query($this) && !MySQL::getLastError()) {

@@ -211,6 +211,11 @@ class Query
         return $this->toSql();
     }
 
+    /**
+     * Send the query to MySQL driver to run
+     *
+     * @return bool
+     */
     public function run()
     {
         if (MySQL::query($this) && !MySQL::getLastError()) {
