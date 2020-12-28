@@ -60,7 +60,7 @@ class Update extends Query
         }
         $values = [];
         foreach ($this->getValues() as $aName => $aVal) {
-            $values[] = $aName . " = '" . $aVal . "'";
+            $values[] = $aName . " = " . ($aVal === null ? "null" : "'" . $aVal . "'");
         }
         $whereCondition = '';
         if ($this->getAttribName() && $this->getAttribOper() && $this->getAttribVal()) {

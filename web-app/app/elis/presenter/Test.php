@@ -34,13 +34,13 @@ class Test extends Main
 
         echo "<h2>Load existing user</h2>";
         $u = new model\User(1);
-        $u->setPassword(utils\Secure::geneHexaString());
+        $u->setPassword(utils\Secure::randHexaString());
         var_dump($u->save());
         var_dump($u, $u->getId());
 
         echo "<h2>New user</h2>";
         $v = new model\User();
-        $v->setEmail("john@doe.com")->setPassword(utils\Secure::geneHexaString());
+        $v->setEmail("john@doe.com")->setPassword(utils\Secure::randHexaString());
         $v->setName("John")->setSurname("Doe");
         var_dump($v->save());
         var_dump($v, $v->getId());

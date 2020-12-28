@@ -77,4 +77,11 @@ class User extends Main
         }
         return false;
     }
+
+    public function __toString()
+    {
+        return trim(($this->getName() ? $this->getName() : '') . ' '
+            . ($this->getSurname() ? $this->getSurname() : '') . ' '
+            . ($this->getId() ? '[#' . $this->getId() . ']' : ''));
+    }
 }

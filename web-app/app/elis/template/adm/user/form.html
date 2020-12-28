@@ -1,0 +1,47 @@
+<h2>{caption}</h2>
+<form action="adm-user/{operation}" method="POST">
+  <div class="items">
+    <label for="name">Name</label>
+    <input
+      id="name"
+      type="text"
+      name="name"
+      value="{name}"
+      placeholder="John"
+      maxlength="45"
+      required
+      autofocus
+    />
+    <label for="surname">Surname</label>
+    <input
+      id="surname"
+      type="text"
+      name="surname"
+      value="{surname}"
+      placeholder="Doe"
+      maxlength="65"
+      required
+    />
+    <label for="email">Email</label>
+    <input
+      id="email"
+      type="email"
+      name="email"
+      value="{email}"
+      placeholder="john.doe@gmail.com"
+      maxlength="100"
+      required
+    />
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      name="password"
+      placeholder="{password-example}"
+      maxlength="20"
+      autocomplete="off"
+    />
+    <div></div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>

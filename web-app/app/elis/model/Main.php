@@ -96,6 +96,9 @@ abstract class Main
                     $this->setData($name, $arguments[0]);
                 }
                 return $this;
+            case 'clr':
+                $this->setData($name, null);
+                return $this;
             case 'get':
                 return $this->getData($name);
         }

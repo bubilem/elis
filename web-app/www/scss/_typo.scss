@@ -36,21 +36,52 @@ a {
   &:hover {
     color: #555;
   }
-  &.btn {
-    margin: 0;
-    padding: 0.25em 0.5em;
-    font-style: normal;
-    text-transform: uppercase;
+}
+.btn {
+  margin: 0;
+  padding: 0.25em 0.5em;
+  font-style: normal;
+  text-transform: uppercase;
+  color: #eee;
+  background: #277;
+  border: none;
+  border-radius: 0.25em;
+  display: inline-block;
+  cursor: pointer;
+  &:hover {
     color: #eee;
-    background: #277;
-    border: none;
-    border-radius: 0.25em;
-    display: inline-block;
-    &:hover {
-      background: #555;
+    background: #555;
+  }
+}
+
+form {
+  font-size: 0.9em;
+  margin: 0.5em 0;
+  > .items {
+    display: grid;
+    grid-template-columns: 1fr 10fr;
+    justify-items: stretch;
+    align-items: center;
+    justify-content: stretch;
+    align-content: start;
+    column-gap: 1em;
+    row-gap: 1em;
+    > label {
+      text-align: right;
+      cursor: pointer;
+    }
+    > input {
+      padding: 0.5em;
+      border: none;
+      border-radius: 0.25em;
+      &[type="submit"] {
+        font-size: 1.2em;
+        padding: 0.5em;
+      }
     }
   }
 }
+
 table {
   font-size: 0.9em;
   width: 100%;
