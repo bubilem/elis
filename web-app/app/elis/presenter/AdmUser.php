@@ -19,46 +19,19 @@ class AdmUser extends Administration
         $this->tmplt->setData('title', 'User administration');
     }
 
-    public function run()
-    {
-        switch ($this->getParam(0)) {
-            case 'new-form':
-                $this->newForm();
-                break;
-            case 'new':
-                $this->new();
-                break;
-            case 'edit-form':
-                $this->editForm();
-                break;
-            case 'edit':
-                $this->edit();
-                break;
-            case 'delete-question':
-                $this->deleteQuestion();
-                break;
-            case 'delete':
-                $this->delete();
-                break;
-            default:
-                $this->userTable();
-        }
-        echo $this->tmplt;
-    }
-
-    private function newForm(model\User $user = null)
+    protected function newForm($model = null)
     {
         $this->tmplt->addData('content', new utils\Template("adm/user/form.html", [
             'caption' => 'New User',
             'operation' => 'new',
-            'name' => $user instanceof model\User ? $user->getName() : '',
-            'surname' => $user instanceof model\User ? $user->getSurname() : '',
-            'email' => $user instanceof model\User ? $user->getEmail() : '',
+            'name' => $model instanceof model\User ? $model->getName() : '',
+            'surname' => $model instanceof model\User ? $model->getSurname() : '',
+            'email' => $model instanceof model\User ? $model->getEmail() : '',
             'password-example' => utils\Secure::randPassword(),
         ]));
     }
 
-    private function new()
+    protected function new()
     {
         $user = new model\User();
         $user->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
@@ -82,7 +55,7 @@ class AdmUser extends Administration
                 $messageTmplt->setData('type', 'err');
             }
             $this->tmplt->addData('content', $messageTmplt);
-            $this->userTable();
+            $this->table();
         } else {
             $messageTmplt->setData('message', 'Email ' . $user->getEmail() . ' already exists. New user ' . $user . ' has not been created.');
             $messageTmplt->setData('type', 'war');
@@ -91,28 +64,41 @@ class AdmUser extends Administration
         }
     }
 
-    private function editForm(model\User $user = null)
+    protected function editForm($model = null)
     {
-        $user = new model\User($this->getParam(1));
-        if ($user->getId()) {
+        $model = new model\User($this->getParam(1));
+        if ($model->getId()) {
+            $roles = new model\CodeList("user-roles.json");
+            $checkboxTmplt = new utils\Template("adm/user/role-checkbox.html");
+            $checkboxes = '';
+            foreach ($roles->getItems() as $role) {
+                $checkboxTmplt->clearData()->setAllData([
+                    'code' => $role->getCode(),
+                    'name' => $role->getName(),
+                    'desc' => $role->getDesc(),
+                    'checked' => ($model->isInRole($role->getCode()) ? 'checked' : '')
+                ]);
+                $checkboxes .= $checkboxTmplt;
+            }
             $this->tmplt->addData('content', new utils\Template("adm/user/form.html", [
-                'caption' => 'Edit User ' . $user,
-                'operation' => 'edit/' . $user->getId(),
-                'name' => (string)$user->getName(),
-                'surname' => (string)$user->getSurname(),
-                'email' => (string)$user->getEmail(),
+                'caption' => 'Edit User ' . $model,
+                'operation' => 'edit/' . $model->getId(),
+                'name' => (string)$model->getName(),
+                'surname' => (string)$model->getSurname(),
+                'email' => (string)$model->getEmail(),
                 'password-example' => utils\Secure::randPassword(),
+                'role-checkboxes' => $checkboxes
             ]));
         } else {
             $this->tmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'User to edit does not exist.'
             ]));
-            $this->userTable();
+            $this->table();
         }
     }
 
-    private function edit()
+    protected function edit()
     {
         $user = new model\User($this->getParam(1));
         $user->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
@@ -123,6 +109,14 @@ class AdmUser extends Administration
         } else {
             $user->clrPassword();
         }
+        $roles = new model\CodeList("user-roles.json");
+        $checkedRoles = [];
+        foreach ($roles->getItems() as $role) {
+            if (filter_input(INPUT_POST, 'role_' . $role->getCode())) {
+                $checkedRoles[] = $role->getCode();
+            }
+        }
+        $user->setRole($checkedRoles);
         $messageTmplt = new utils\Template("adm/message.html");
         $sameEmailUsers = (new db\Select())
             ->setSelect('id')
@@ -142,7 +136,7 @@ class AdmUser extends Administration
                 ]);
             }
             $this->tmplt->addData('content', $messageTmplt);
-            $this->userTable();
+            $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'Email ' . $user->getEmail() . ' already exists. User ' . $user . ' has not been saved.',
@@ -153,7 +147,7 @@ class AdmUser extends Administration
         }
     }
 
-    private function deleteQuestion()
+    protected function deleteQuestion()
     {
         $user = new model\User($this->getParam(1));
         if ($user->getId()) {
@@ -167,11 +161,11 @@ class AdmUser extends Administration
                 'type' => 'err',
                 'message' => 'User to delete does not exist.'
             ]));
-            $this->userTable();
+            $this->table();
         }
     }
 
-    private function delete()
+    protected function delete()
     {
         $user = new model\User($this->getParam(1));
         $messageTmplt = new utils\Template("adm/message.html");
@@ -193,14 +187,18 @@ class AdmUser extends Administration
             ]);
         }
         $this->tmplt->setData('content', $messageTmplt);
-        $this->userTable();
+        $this->table();
     }
 
-    private function userTable()
+    protected function table()
     {
         $tableRowTmplt = new utils\Template("adm/user/table-row.html");
         $rows = '';
-        $query = (new db\Select())->setSelect("*")->setFrom("user")->setOrder('surname,name');
+        $query = (new db\Select())
+            ->setSelect("u.*, GROUP_CONCAT(r.role SEPARATOR ' ') roles")
+            ->setFrom("user u LEFT JOIN user_has_role r ON u.id = r.user")
+            ->setGroup("u.id")
+            ->setOrder('u.surname, u.name');
         $queryResult = $query->run();
         if (is_array($queryResult)) {
             foreach ($queryResult as $record) {
@@ -209,7 +207,8 @@ class AdmUser extends Administration
                     'name' => $record['name'],
                     'surname' => $record['surname'],
                     'email' => $record['email'],
-                    'password' => (empty($record['password']) ? '&#10005;' : '&#10004;')
+                    'password' => (empty($record['password']) ? '&#10005;' : '&#10004;'),
+                    'roles' => $record['roles']
                 ]);
                 $rows .= $tableRowTmplt;
             }

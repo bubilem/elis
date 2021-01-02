@@ -10,7 +10,7 @@ class CodeList
 {
 
     /**
-     * Code list items
+     * CodeListItem array
      *
      * @var array
      */
@@ -30,6 +30,10 @@ class CodeList
      */
     public function __construct(string $filename = null)
     {
+        $this->items = [];
+        if ($filename) {
+            $this->load($filename);
+        }
     }
 
     /**
@@ -40,17 +44,43 @@ class CodeList
      */
     public function load(string $filename): bool
     {
-        return false;
+        if (($content = file_get_contents(self::$path . $filename)) === false) {
+            return false;
+        }
+        $items = json_decode($content, true);
+        if (!is_array($items)) {
+            return false;
+        }
+        foreach ($items as $code => $data) {
+            if (is_string($data)) {
+                $data = ['name' => $data];
+            }
+            $this->items[$code] = new CodeListItem($code, $data);
+        }
+        return true;
     }
 
     /**
-     * Code list item/items getter
+     * Code List Item array
      *
-     * @param string $firstKey
-     * @param string $secondKey
-     * @return mixed whole items array when no params, array item when key or keys used, null on fail
+     * @return array
      */
-    public function get(string $firstKey = null, string $secondKey = null)
+    public function getItems(): array
     {
+        return $this->items;
+    }
+
+    /**
+     * Get Code List Item from items
+     *
+     * @param string $code
+     * @return CodeListItem
+     */
+    public function getItem(string $code): CodeListItem
+    {
+        if (isset($this->items[$code])) {
+            return $this->items[$code];
+        }
+        return null;
     }
 }

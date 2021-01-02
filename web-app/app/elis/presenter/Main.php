@@ -50,10 +50,48 @@ abstract class Main
     }
 
     /**
-     * Abstract method run
-     * Every presenter must have it
+     * Main run method
      *
      * @return void
      */
-    abstract public function run();
+    public function run()
+    {
+        switch ($this->getParam(0)) {
+            case 'new-form':
+                $this->newForm();
+                break;
+            case 'new':
+                $this->new();
+                break;
+            case 'edit-form':
+                $this->editForm();
+                break;
+            case 'edit':
+                $this->edit();
+                break;
+            case 'delete-question':
+                $this->deleteQuestion();
+                break;
+            case 'delete':
+                $this->delete();
+                break;
+            default:
+                $this->table();
+        }
+        echo $this->tmplt;
+    }
+
+    protected abstract function newForm($model = null);
+
+    protected abstract function new();
+
+    protected abstract function editForm($model = null);
+
+    protected abstract function edit();
+
+    protected abstract function deleteQuestion();
+
+    protected abstract function delete();
+
+    protected abstract function table();
 }

@@ -1,0 +1,35 @@
+<h2>{caption}</h2>
+<form action="adm-vehicle/{operation}" method="POST">
+  <div class="items">
+    <label for="name">Name</label>
+    <input id="name" type="text" name="name" value="{name}" maxlength="45" required autofocus />
+    <label for="uid">Uid</label>
+    <input id="uid" type="text" name="uid" value="{uid}" maxlength="10" required />
+    <label for="mileage">Mileage</label>
+    <input
+      id="mileage"
+      type="number"
+      min="0"
+      max="999999"
+      step="1"
+      name="mileage"
+      value="{mileage}"
+      maxlength="6"
+      required
+    />
+    <label for="avg_consuption">AVG consuption</label>
+    <input
+      id="avg_consuption"
+      type="number"
+      min="0"
+      max="999"
+      step="0.1"
+      name="avg_consuption"
+      value="{avg_consuption}"
+      maxlength="6"
+      required
+    />
+    <div></div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>

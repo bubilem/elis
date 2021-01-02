@@ -1,0 +1,22 @@
+{
+  "ADM": {
+    "name": "administrator",
+    "desc": "administrator with full rights for the entire information system"
+  },
+  "MNG": {
+    "name": "manager",
+    "desc": "director, manager..."
+  },
+  "DSP": {
+    "name": "dispatcher",
+    "desc": "transport control dispatcher"
+  },
+  "DRV": {
+    "name": "driver",
+    "desc": "main driver carrying cargo"
+  },
+  "CDR": {
+    "name": "co-driver",
+    "desc": "cooperating co-driver transporting cargo"
+  }
+}

@@ -1,4 +1,10 @@
 {
+  "workbench.colorTheme": "Default Dark+",
+  "window.zoomLevel": 0,
+  "editor.fontSize": 15,
+  "terminal.integrated.fontSize": 12,
+  "editor.fontLigatures": true,
+  "editor.formatOnSave": true,
   "liveSassCompile.settings.formats": [
     {
       "format": "compressed",

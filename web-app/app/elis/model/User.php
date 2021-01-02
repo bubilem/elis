@@ -31,6 +31,16 @@ class User extends Main
             ->run();
         if (isset($result[0]) && is_array($result[0]) && !empty($result[0])) {
             $this->data = $result[0];
+            $result = (new db\Select())
+                ->setSelect("role")->setFrom('user_has_role')->setWhere('user = ' . $this->getId())
+                ->run();
+            $roles = [];
+            if (is_array($result) && !empty($result)) {
+                foreach ($result as $role) {
+                    $roles[] = $role['role'];
+                }
+            }
+            $this->setRole($roles);
             return true;
         }
         return false;
@@ -45,12 +55,24 @@ class User extends Main
     {
         $data = [
             'email' => $this->getEmail(),
-            'password' => $this->getPassword(),
             'name' => $this->getName(),
             'surname' => $this->getSurname()
         ];
+        if ($this->getPassword()) {
+            $data['password'] = $this->getPassword();
+        }
         if ($this->getId()) {
-            if ((new db\Update('user', $data, $this->getId()))->run()) {
+            if ((new db\Update('user', $data, $this->getId()))->run() !== false) {
+                if ($this->getRole()) {
+                    (new db\Delete('user_has_role', $this->getId()))->setAttribName('user')->run();
+                    foreach ($this->getRole() as $role) {
+                        (new db\Insert('user_has_role', [
+                            'user' => $this->getId(),
+                            'role' => $role,
+                            'assigned' => date("Y-m-d H:i:s")
+                        ]))->run();
+                    }
+                }
                 return true;
             }
         } else {
@@ -76,6 +98,17 @@ class User extends Main
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if user is in role
+     *
+     * @param string $role
+     * @return bool true if user is in role
+     */
+    public function isInRole(string $role): bool
+    {
+        return in_array($role, $this->getRole());
     }
 
     public function __toString()
