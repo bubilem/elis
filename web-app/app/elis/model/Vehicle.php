@@ -80,6 +80,6 @@ class Vehicle extends Main
 
     public function __toString()
     {
-        return trim($this->getName() . ' - ' . $this->getUid());
+        return trim($this->getName() . ' [' . $this->getUid() . ']');
     }
 }

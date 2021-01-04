@@ -21,6 +21,18 @@ class AdmUser extends Administration
 
     protected function newForm($model = null)
     {
+        $roles = new model\CodeList("user-roles.json");
+        $checkboxTmplt = new utils\Template("adm/user/role-checkbox.html");
+        $checkboxes = '';
+        foreach ($roles->getItems() as $role) {
+            $checkboxTmplt->clearData()->setAllData([
+                'code' => $role->getCode(),
+                'name' => $role->getName(),
+                'desc' => $role->getDesc(),
+                'checked' => ($model instanceof model\User && $model->isInRole($role->getCode()) ? 'checked' : '')
+            ]);
+            $checkboxes .= $checkboxTmplt;
+        }
         $this->tmplt->addData('content', new utils\Template("adm/user/form.html", [
             'caption' => 'New User',
             'operation' => 'new',
@@ -28,6 +40,7 @@ class AdmUser extends Administration
             'surname' => $model instanceof model\User ? $model->getSurname() : '',
             'email' => $model instanceof model\User ? $model->getEmail() : '',
             'password-example' => utils\Secure::randPassword(),
+            'role-checkboxes' => $checkboxes
         ]));
     }
 
@@ -40,6 +53,14 @@ class AdmUser extends Administration
         if (filter_input(INPUT_POST, 'password')) {
             $user->setPassword(utils\Secure::hash(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING)));
         }
+        $roles = new model\CodeList("user-roles.json");
+        $checkedRoles = [];
+        foreach ($roles->getItems() as $role) {
+            if (filter_input(INPUT_POST, 'role_' . $role->getCode())) {
+                $checkedRoles[] = $role->getCode();
+            }
+        }
+        $user->setRole($checkedRoles);
         $messageTmplt = new utils\Template("adm/message.html");
         $sameEmailUsers = (new db\Select())
             ->setSelect('id')

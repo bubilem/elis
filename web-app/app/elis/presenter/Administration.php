@@ -25,4 +25,50 @@ abstract class Administration extends Main
         $this->tmplt->setData('lang', utils\Conf::get("DEF_LANG"));
         $this->tmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
     }
+
+    /**
+     * Main run method
+     *
+     * @return void
+     */
+    public function run()
+    {
+        switch ($this->getParam(0)) {
+            case 'new-form':
+                $this->newForm();
+                break;
+            case 'new':
+                $this->new();
+                break;
+            case 'edit-form':
+                $this->editForm();
+                break;
+            case 'edit':
+                $this->edit();
+                break;
+            case 'delete-question':
+                $this->deleteQuestion();
+                break;
+            case 'delete':
+                $this->delete();
+                break;
+            default:
+                $this->table();
+        }
+        echo $this->tmplt;
+    }
+
+    protected abstract function newForm($model = null);
+
+    protected abstract function new();
+
+    protected abstract function editForm($model = null);
+
+    protected abstract function edit();
+
+    protected abstract function deleteQuestion();
+
+    protected abstract function delete();
+
+    protected abstract function table();
 }

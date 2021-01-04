@@ -63,21 +63,26 @@ class User extends Main
         }
         if ($this->getId()) {
             if ((new db\Update('user', $data, $this->getId()))->run() !== false) {
-                if ($this->getRole()) {
-                    (new db\Delete('user_has_role', $this->getId()))->setAttribName('user')->run();
-                    foreach ($this->getRole() as $role) {
-                        (new db\Insert('user_has_role', [
-                            'user' => $this->getId(),
-                            'role' => $role,
-                            'assigned' => date("Y-m-d H:i:s")
-                        ]))->run();
-                    }
+                (new db\Delete('user_has_role', $this->getId()))->setAttribName('user')->run();
+                foreach ($this->getRole() as $role) {
+                    (new db\Insert('user_has_role', [
+                        'user' => $this->getId(),
+                        'role' => $role,
+                        'assigned' => date("Y-m-d H:i:s")
+                    ]))->run();
                 }
                 return true;
             }
         } else {
             if ($newId = (new db\Insert('user', $data))->run()) {
                 $this->setId($newId);
+                foreach ($this->getRole() as $role) {
+                    (new db\Insert('user_has_role', [
+                        'user' => $this->getId(),
+                        'role' => $role,
+                        'assigned' => date("Y-m-d H:i:s")
+                    ]))->run();
+                }
                 return true;
             }
         }
@@ -108,7 +113,7 @@ class User extends Main
      */
     public function isInRole(string $role): bool
     {
-        return in_array($role, $this->getRole());
+        return is_array($this->getRole()) && in_array($role, $this->getRole());
     }
 
     public function __toString()

@@ -28,7 +28,6 @@ class AdmVehicle extends Administration
             'uid' => $model instanceof model\Vehicle ? $model->getUid() : '',
             'mileage' => $model instanceof model\Vehicle ? $model->getMileage() : '',
             'avg_consuption' => $model instanceof model\Vehicle ? $model->getAvgConsuption() : ''
-
         ]));
     }
 
