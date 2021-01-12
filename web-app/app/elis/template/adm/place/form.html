@@ -1,0 +1,14 @@
+<h2>{caption}</h2>
+<form action="adm-place/{operation}" method="POST">
+  <div class="items">
+    <label for="name">Name</label>
+    <input id="name" type="text" name="name" value="{name}" maxlength="45" required autofocus />
+    <label for="code">code</label>
+    <input id="code" type="text" name="code" value="{code}" maxlength="10" />
+    <label for="street">Street</label>
+    <input id="street" type="text" name="street" value="{street}" maxlength="45" />
+
+    <div></div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>

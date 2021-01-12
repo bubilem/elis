@@ -72,7 +72,7 @@ class AdmVehicle extends Administration
                 'name' => (string)$model->getName(),
                 'uid' => (string)$model->getUid(),
                 'mileage' => (string)$model->getMileage(),
-                'avg_consuption' => (string)$model->getAvgConsuption()
+                'avg_consuption' => (float)$model->getAvgConsuption()
             ]));
         } else {
             $this->tmplt->addData('content', new utils\Template("adm/message.html", [
