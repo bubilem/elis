@@ -98,6 +98,11 @@ form {
         }
       }
     }
+    > select {
+      padding: 0.5em;
+      border: none;
+      border-radius: 0.25em;
+    }
   }
 }
 

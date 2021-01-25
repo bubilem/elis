@@ -37,7 +37,7 @@ class AdmVehicle extends Administration
         $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $model->setUid(filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING));
         $model->setMileage(filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT));
-        $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT));
+        $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $messageTmplt = new utils\Template("adm/message.html");
         $sameUidVehicle = (new db\Select())
             ->setSelect('id')
@@ -89,7 +89,7 @@ class AdmVehicle extends Administration
         $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $model->setUid(filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING));
         $model->setMileage(filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT));
-        $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT));
+        $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $messageTmplt = new utils\Template("adm/message.html");
         $sameUidVehicle = (new db\Select())
             ->setSelect('id')

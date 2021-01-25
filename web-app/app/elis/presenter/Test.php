@@ -20,6 +20,10 @@ class Test extends Main
 
     public function run()
     {
+        var_dump(model\Main::dbToModelName('avg-consuption-ext'));
+        var_dump(model\Main::modelToDbName('avgConsuptionExt'));
+
+        /*
         echo "<h2>DML queries testing</h2>";
         echo new db\Insert('user', ['name' => 'Michal', 'surname' => 'Bubílek']);
         echo "<br>";
@@ -49,5 +53,6 @@ class Test extends Main
         $v = new model\User(24);
         var_dump($v->delete());
         var_dump($v, $v->getId());
+        */
     }
 }
