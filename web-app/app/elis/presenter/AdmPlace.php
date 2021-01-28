@@ -3,10 +3,8 @@
 namespace elis\presenter;
 
 use elis\model;
-use elis\model\CodeList;
 use elis\utils;
 use elis\utils\db;
-use elis\utils\Template;
 
 /**
  * Place administration presenter
@@ -24,8 +22,8 @@ class AdmPlace extends Administration
     public function newForm($model = null)
     {
         $countryCode = '';
-        $countryCodeTmplt = new Template("adm/place/form-option.html");
-        foreach ((new CodeList("countries.json"))->getItems() as $item) {
+        $countryCodeTmplt = new utils\Template("adm/place/form-option.html");
+        foreach ((new model\CodeList("countries.json"))->getItems() as $item) {
             $countryCodeTmplt->setAllData([
                 'value' => $item->getCode(),
                 'name' => $item->getName(),
@@ -85,8 +83,8 @@ class AdmPlace extends Administration
         $model = new model\Place($this->getParam(1));
         if ($model->getId()) {
             $countryCode = '';
-            $countryCodeTmplt = new Template("adm/place/form-option.html");
-            foreach ((new CodeList("countries.json"))->getItems() as $item) {
+            $countryCodeTmplt = new utils\Template("adm/place/form-option.html");
+            foreach ((new model\CodeList("countries.json"))->getItems() as $item) {
                 $countryCodeTmplt->setAllData([
                     'value' => $item->getCode(),
                     'name' => $item->getName(),

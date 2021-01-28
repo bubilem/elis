@@ -1,0 +1,45 @@
+<h2>{caption}</h2>
+<form action="adm-package/{operation}" method="POST">
+  <div class="items">
+    <label for="code">Code</label>
+    <input id="code" type="text" name="code" value="{code}" maxlength="20" required autofocus />
+    <label for="width">Width [m]</label>
+    <input id="width" type="number" name="width" value="{width}" min="0" max="999" step="0.001" />
+    <label for="height">Height [m]</label>
+    <input
+      id="height"
+      type="number"
+      name="height"
+      value="{height}"
+      min="0"
+      max="999"
+      step="0.001"
+    />
+    <label for="lenght">Lenght [m]</label>
+    <input
+      id="lenght"
+      type="number"
+      name="lenght"
+      value="{lenght}"
+      min="0"
+      max="999"
+      step="0.001"
+    />
+    <label for="weight">Weight [kg]</label>
+    <input
+      id="weight"
+      type="number"
+      name="weight"
+      value="{weight}"
+      min="0"
+      max="99999999"
+      step="0.01"
+    />
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5">{description}</textarea>
+    <div>
+      <input type="hidden" name="type" value="{type}" />
+    </div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>

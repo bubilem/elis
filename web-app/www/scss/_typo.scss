@@ -24,6 +24,11 @@ b {
   font-weight: 600;
 }
 
+sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+
 p {
   line-height: 1.4;
   text-align: justify;
@@ -54,6 +59,30 @@ a {
   }
 }
 
+nav {
+  margin: 0.25em 0;
+  ul li {
+    margin: 0.5em 0;
+  }
+  h3 {
+    font-size: 1.2em;
+    font-weight: 400;
+  }
+  p {
+    font-size: 0.8em;
+    font-weight: 400;
+    text-align: left;
+    text-transform: none;
+  }
+  &.tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 0.5em 0.5em;
+    justify-items: stretch;
+  }
+}
+
 form {
   font-size: 0.9em;
   margin: 0.5em 0;
@@ -72,7 +101,8 @@ form {
         cursor: pointer;
       }
     }
-    > input {
+    > input,
+    > textarea {
       padding: 0.5em;
       border: none;
       border-radius: 0.25em;

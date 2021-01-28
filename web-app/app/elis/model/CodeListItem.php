@@ -49,7 +49,7 @@ class CodeListItem
     public function __call($name, $arguments)
     {
         $typeOfMethod = strtolower(substr($name, 0, 3));
-        $name = strtolower(substr($name, 3));
+        $name = strtolower(implode('_', preg_split('/(?=[A-Z])/', lcfirst(substr($name, 3)))));
         if ($typeOfMethod == 'get' && isset($this->data[$name])) {
             return $this->data[$name];
         }

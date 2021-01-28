@@ -74,9 +74,9 @@ class CodeList
      * Get Code List Item from items
      *
      * @param string $code
-     * @return CodeListItem
+     * @return CodeListItem|null
      */
-    public function getItem(string $code): CodeListItem
+    public function getItem(string $code): ?CodeListItem
     {
         if (isset($this->items[$code])) {
             return $this->items[$code];

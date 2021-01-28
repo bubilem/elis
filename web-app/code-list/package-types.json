@@ -6,7 +6,7 @@
     "width": "2.438",
     "height": "2.591",
     "max_gross_weight": "30000",
-    "max_net_load": "27.800",
+    "max_net_load": "27800",
     "volume": "33.1"
   },
   "C40": {
@@ -16,7 +16,7 @@
     "width": "2.438",
     "height": "2.591",
     "max_gross_weight": "30000",
-    "max_net_load": "26.199",
+    "max_net_load": "26199",
     "volume": "67.5"
   },
   "EP1": {
