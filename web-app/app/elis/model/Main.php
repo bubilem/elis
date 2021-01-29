@@ -2,6 +2,8 @@
 
 namespace elis\model;
 
+use elis\utils;
+
 /**
  * Main model class
  * @version 0.0.1 201122 created
@@ -89,41 +91,19 @@ abstract class Main
     public function __call($name, $arguments)
     {
         $typeOfMethod = strtolower(substr($name, 0, 3));
-        $name = lcfirst(substr($name, 3));
+        $name = substr($name, 3);
         switch ($typeOfMethod) {
             case 'set':
                 if (isset($arguments[0])) {
-                    $this->setData(self::modelToDbName($name), $arguments[0]);
+                    $this->setData(utils\Str::fromCamelCase($name, "_"), $arguments[0]);
                 }
                 return $this;
             case 'clr':
-                $this->setData(self::modelToDbName($name), null);
+                $this->setData(utils\Str::fromCamelCase($name, "_"), null);
                 return $this;
             case 'get':
-                return $this->getData(self::modelToDbName($name));
+                return $this->getData(utils\Str::fromCamelCase($name, "_"));
         }
         return false;
-    }
-
-    /**
-     * Translate attribute database name to model name
-     *
-     * @param string $dbName
-     * @return string model name
-     */
-    public static function dbToModelName(string $dbName): string
-    {
-        return str_replace('_', '', lcfirst(ucwords($dbName, '_')));
-    }
-
-    /**
-     * Translate attribute model name to database name
-     *
-     * @param string $modelName
-     * @return string database name
-     */
-    public static function modelToDbName(string $modelName): string
-    {
-        return strtolower(implode('_', preg_split('/(?=[A-Z])/', $modelName)));
     }
 }

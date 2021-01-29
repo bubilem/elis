@@ -2,7 +2,7 @@
 
 namespace elis\controller;
 
-use elis\utils\Conf;
+use elis\utils;
 use elis\presenter;
 
 /**
@@ -20,11 +20,11 @@ class Router
      */
     public static function route(string $uri)
     {
-        $params = explode('/', substr($uri, strlen(Conf::get('URL_DIR'))));
+        $params = explode('/', substr($uri, strlen(utils\Conf::get('URL_DIR'))));
         if (empty($params[0])) {
             (new presenter\Home([]))->run();
         } else {
-            $classClassName = 'elis\\presenter\\' . str_replace('-', '', ucwords(array_shift($params), '-'));
+            $classClassName = 'elis\\presenter\\' . utils\Str::toCamelCase(array_shift($params));
             try {
                 $presenter = new $classClassName($params);
                 if (method_exists($classClassName, 'run')) {
@@ -43,7 +43,7 @@ class Router
      */
     public static function redirect(string $uri)
     {
-        header("Location: " . (strpos($uri, 'http') === 0 ? '' : Conf::get('URL_BASE') . Conf::get('URL_DIR')) . $uri);
+        header("Location: " . (strpos($uri, 'http') === 0 ? '' : utils\Conf::get('URL_BASE') . utils\Conf::get('URL_DIR')) . $uri);
         header("Connection: close");
         exit;
     }

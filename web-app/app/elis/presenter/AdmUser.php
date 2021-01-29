@@ -16,7 +16,7 @@ class AdmUser extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'User administration');
+        $this->tmplt->setData('title', 'User Administration');
     }
 
     protected function newForm($model = null)

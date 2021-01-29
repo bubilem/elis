@@ -16,7 +16,7 @@ class AdmVehicle extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Vehicle administration');
+        $this->tmplt->setData('title', 'Vehicle Administration');
     }
 
     public function newForm($model = null)

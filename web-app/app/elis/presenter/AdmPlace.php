@@ -16,7 +16,7 @@ class AdmPlace extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Place administration');
+        $this->tmplt->setData('title', 'Place Administration');
     }
 
     public function newForm($model = null)

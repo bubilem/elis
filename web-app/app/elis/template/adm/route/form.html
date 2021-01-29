@@ -1,0 +1,19 @@
+<h2>{caption}</h2>
+<form action="adm-route/{operation}" method="POST">
+  <div class="items">
+    <label for="name">Name</label>
+    <input id="name" type="text" name="name" value="{name}" maxlength="45" required autofocus />
+    <label for="begin">Begin</label>
+    <input id="begin" type="date" name="begin" value="{begin}" required />
+    <label for="vehicle">Vehicle</label>
+    <select id="vehicle" name="vehicle">
+      {vehicles}
+    </select>
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5">{description}</textarea>
+    <div>
+      <input type="hidden" name="type" value="{type}" />
+    </div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>
