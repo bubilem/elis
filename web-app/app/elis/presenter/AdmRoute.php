@@ -218,4 +218,8 @@ class AdmRoute extends Administration
             ]));
         }
     }
+
+    protected function userForm()
+    {
+    }
 }

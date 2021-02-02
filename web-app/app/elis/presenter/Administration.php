@@ -33,27 +33,19 @@ abstract class Administration extends Main
      */
     public function run()
     {
-        switch ($this->getParam(0)) {
-            case 'new-form':
-                $this->newForm();
-                break;
-            case 'new':
-                $this->new();
-                break;
-            case 'edit-form':
-                $this->editForm();
-                break;
-            case 'edit':
-                $this->edit();
-                break;
-            case 'delete-question':
-                $this->deleteQuestion();
-                break;
-            case 'delete':
-                $this->delete();
-                break;
-            default:
+        if (empty($this->getParam(0))) {
+            $this->table();
+        } else {
+            $methodName = utils\Str::toCamelCase($this->getParam(0), "-", true);
+            if (method_exists($this, $methodName)) {
+                $this->$methodName();
+            } else {
+                $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+                    'message' => 'Bad parameter',
+                    'type' => 'err'
+                ]));
                 $this->table();
+            }
         }
         echo $this->tmplt;
     }
