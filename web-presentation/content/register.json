@@ -1,0 +1,27 @@
+{
+  "home": {
+    "title": "Project name",
+    "description": "Student project on the connection of logistics and IT",
+    "menu-item-name": "Home"
+  },
+  "elis": {
+    "title": "ELIS",
+    "description": "Web database application...",
+    "menu-item-name": "ELIS"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Articles about project...",
+    "menu-item-name": "Super Blog"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "description": "email, social networks....",
+    "menu-item-name": "Contacts"
+  },
+  "404": {
+    "title": "404 Page not found",
+    "description": "ups,...",
+    "menu-item-name": ""
+  }
+}

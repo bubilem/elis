@@ -10,8 +10,10 @@ class Str
 {
     /**
      * Translate string to Camel Case form
-     * first-example -> firstExample
+     * first-example -> firstExample     
      * this-second-example -> thisSecondExample
+     * third_example -> thirdExample
+     * fourth-example -> FourthExample
      *
      * @param string $value
      * @param string $separator
