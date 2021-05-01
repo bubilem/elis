@@ -16,7 +16,7 @@ class AdmPlace extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Place Administration');
+        $this->pageTmplt->setData('title', 'Place Administration');
     }
 
     public function newForm($model = null)
@@ -31,7 +31,7 @@ class AdmPlace extends Administration
             ]);
             $countryCode .= (string)$countryCodeTmplt;
         }
-        $this->tmplt->addData('content', new utils\Template("adm/place/form.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/place/form.html", [
             'caption' => 'New Place',
             'operation' => 'new',
             'name' => $model instanceof model\Place ? $model->getName() : '',
@@ -68,19 +68,19 @@ class AdmPlace extends Administration
                 $messageTmplt->setData('message', 'Place ' . $model . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setData('message', 'Code ' . $model->getCode() . ' already exists. New place ' . $model . ' has not been created.');
             $messageTmplt->setData('type', 'war');
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->newForm($model);
         }
     }
 
     protected function editForm($model = null)
     {
-        $model = new model\Place($this->getParam(1));
+        $model = new model\Place($this->getParam(2));
         if ($model->getId()) {
             $countryCode = '';
             $countryCodeTmplt = new utils\Template("adm/place/form-option.html");
@@ -92,7 +92,7 @@ class AdmPlace extends Administration
                 ]);
                 $countryCode .= (string)$countryCodeTmplt;
             }
-            $this->tmplt->addData('content', new utils\Template("adm/place/form.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/place/form.html", [
                 'caption' => 'Edit Place ' . $model,
                 'operation' => 'edit/' . $model->getId(),
                 'name' => (string)$model->getName(),
@@ -104,7 +104,7 @@ class AdmPlace extends Administration
                 'gps' => (string)$model->getGps()
             ]));
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Place to edit does not exist.'
             ]));
@@ -114,7 +114,7 @@ class AdmPlace extends Administration
 
     protected function edit()
     {
-        $model = new model\Place($this->getParam(1));
+        $model = new model\Place($this->getParam(2));
         $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $model->setCode(filter_input(INPUT_POST, 'code', FILTER_SANITIZE_STRING));
         $model->setStreet(filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING));
@@ -140,29 +140,29 @@ class AdmPlace extends Administration
                     'type' => 'err'
                 ]);
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'Code ' . $model->getCode() . ' already exists. Place ' . $model . ' has not been saved.',
                 'type' => 'war'
             ]);
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->editForm($model);
         }
     }
 
     protected function deleteQuestion()
     {
-        $model = new model\Place($this->getParam(1));
+        $model = new model\Place($this->getParam(2));
         if ($model->getId()) {
             $deleteQuestionTmplt = new utils\Template("adm/place/delete-yes-no.html", [
                 'id' => $model->getId(),
                 'place' => (string)$model
             ]);
-            $this->tmplt->addData('content', $deleteQuestionTmplt);
+            $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Place to delete does not exist.'
             ]));
@@ -172,7 +172,7 @@ class AdmPlace extends Administration
 
     protected function delete()
     {
-        $model = new model\Place($this->getParam(1));
+        $model = new model\Place($this->getParam(2));
         $messageTmplt = new utils\Template("adm/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
@@ -191,7 +191,7 @@ class AdmPlace extends Administration
                 'type' => 'err'
             ]);
         }
-        $this->tmplt->setData('content', $messageTmplt);
+        $this->adminTmplt->setData('content', $messageTmplt);
         $this->table();
     }
 
@@ -216,12 +216,12 @@ class AdmPlace extends Administration
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->tmplt->addData('content', new utils\Template("adm/place/table.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/place/table.html", [
             'caption' => 'Place List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

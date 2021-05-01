@@ -1,0 +1,46 @@
+.administration {
+  > nav {
+    border-bottom: 1px $lighter-color solid;
+    padding: 0 0 0.2em 0;
+    > ul {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      > li {
+        margin: 0.1em;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $breakpoint) {
+  .administration {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: start;
+    align-items: stretch;
+    @media screen and (max-width: $breakpoint) {
+      flex-direction: column;
+    }
+    > nav {
+      border-bottom: none;
+      border-right: 1px $lighter-color solid;
+      padding: 0 0.5em 0 0;
+      margin: 0 0.5em 0 0;
+      > ul {
+        display: block;
+        > li {
+          margin: 0.25em 0;
+          > a.btn {
+            display: block;
+            margin: 0;
+          }
+        }
+      }
+    }
+    > div {
+      width: 100%;
+    }
+  }
+}

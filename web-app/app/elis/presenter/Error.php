@@ -18,21 +18,18 @@ class Error extends Main
 
     public function run()
     {
-        $tmplt = new utils\Template("error.html");
-        $tmplt->setData('lang', utils\Conf::get("DEF_LANG"));
-        $tmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
+        $tmplt = new utils\Template("page/error.html");
         switch ($this->getParam(0)) {
             case '404':
-                $tmplt->setData('code', '404');
-                $tmplt->setData('name', 'Not Found');
+                $this->pageTmplt->setData('title', '404 Not Found');
                 $tmplt->setData('message', 'The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.');
                 break;
             case '500':
             default:
-                $tmplt->setData('code', '500');
-                $tmplt->setData('name', 'Internal error');
+                $this->pageTmplt->setData('title', '500 Internal error');
                 $tmplt->setData('message', 'Auuuuu.');
         }
-        echo $tmplt->render();
+        $this->pageTmplt->setData('main', $tmplt);
+        echo $this->pageTmplt;
     }
 }

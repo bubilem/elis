@@ -16,12 +16,12 @@ class AdmVehicle extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Vehicle Administration');
+        $this->pageTmplt->setData('title', 'Vehicle Administration');
     }
 
     public function newForm($model = null)
     {
-        $this->tmplt->addData('content', new utils\Template("adm/vehicle/form.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/vehicle/form.html", [
             'caption' => 'New Vehicle',
             'operation' => 'new',
             'name' => $model instanceof model\Vehicle ? $model->getName() : '',
@@ -52,21 +52,21 @@ class AdmVehicle extends Administration
                 $messageTmplt->setData('message', 'Vehicle ' . $model . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setData('message', 'UID ' . $model->getUid() . ' already exists. New vehicle ' . $model . ' has not been created.');
             $messageTmplt->setData('type', 'war');
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->newForm($model);
         }
     }
 
     protected function editForm($model = null)
     {
-        $model = new model\Vehicle($this->getParam(1));
+        $model = new model\Vehicle($this->getParam(2));
         if ($model->getId()) {
-            $this->tmplt->addData('content', new utils\Template("adm/vehicle/form.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/vehicle/form.html", [
                 'caption' => 'Edit Vehicle ' . $model,
                 'operation' => 'edit/' . $model->getId(),
                 'name' => (string)$model->getName(),
@@ -75,7 +75,7 @@ class AdmVehicle extends Administration
                 'avg_consuption' => (float)$model->getAvgConsuption()
             ]));
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Vehicle to edit does not exist.'
             ]));
@@ -85,7 +85,7 @@ class AdmVehicle extends Administration
 
     protected function edit()
     {
-        $model = new model\Vehicle($this->getParam(1));
+        $model = new model\Vehicle($this->getParam(2));
         $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $model->setUid(filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING));
         $model->setMileage(filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT));
@@ -108,29 +108,29 @@ class AdmVehicle extends Administration
                     'type' => 'err'
                 ]);
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'uid ' . $model->getUid() . ' already exists. Vehicle ' . $model . ' has not been saved.',
                 'type' => 'war'
             ]);
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->editForm($model);
         }
     }
 
     protected function deleteQuestion()
     {
-        $model = new model\Vehicle($this->getParam(1));
+        $model = new model\Vehicle($this->getParam(2));
         if ($model->getId()) {
             $deleteQuestionTmplt = new utils\Template("adm/vehicle/delete-yes-no.html", [
                 'id' => $model->getId(),
                 'vehicle' => (string)$model
             ]);
-            $this->tmplt->addData('content', $deleteQuestionTmplt);
+            $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Vehicle to delete does not exist.'
             ]));
@@ -140,7 +140,7 @@ class AdmVehicle extends Administration
 
     protected function delete()
     {
-        $model = new model\Vehicle($this->getParam(1));
+        $model = new model\Vehicle($this->getParam(2));
         $messageTmplt = new utils\Template("adm/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
@@ -159,7 +159,7 @@ class AdmVehicle extends Administration
                 'type' => 'err'
             ]);
         }
-        $this->tmplt->setData('content', $messageTmplt);
+        $this->adminTmplt->setData('content', $messageTmplt);
         $this->table();
     }
 
@@ -184,12 +184,12 @@ class AdmVehicle extends Administration
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->tmplt->addData('content', new utils\Template("adm/vehicle/table.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/vehicle/table.html", [
             'caption' => 'Vehicle List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

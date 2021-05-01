@@ -16,30 +16,30 @@ class AdmPackage extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Package Administration');
+        $this->pageTmplt->setData('title', 'Package Administration');
     }
 
     public function newForm($model = null)
     {
         if ($model == null) {
-            if ($this->getParam(1) == 'package-type') {
+            if ($this->getParam(2) == 'package-type') {
                 $this->newFormPackageType();
                 return;
             }
-            $packageType = (new model\CodeList("package-types.json"))->getItem($this->getParam(1));
+            $packageType = (new model\CodeList("package-types.json"))->getItem($this->getParam(2));
             if ($packageType == null) {
                 $messageTmplt = new utils\Template("adm/message.html", [
                     'message' => 'Wrong packet type definition.',
                     'type' => 'err'
                 ]);
-                $this->tmplt->addData('content', $messageTmplt);
+                $this->adminTmplt->addData('content', $messageTmplt);
                 $this->newFormPackageType();
                 return;
             }
         } else if ($model instanceof model\Package) {
             $packageType = (new model\CodeList("package-types.json"))->getItem($model->getType());
         }
-        $this->tmplt->addData('content', new utils\Template("adm/package/form.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/package/form.html", [
             'caption' => 'New Package ' . $packageType->getCode(),
             'operation' => 'new',
             'code' => $model instanceof model\Package ? $model->getCode() : '',
@@ -70,7 +70,7 @@ class AdmPackage extends Administration
             ]);
             $packageTypes .= (string)$packageTypeTmplt;
         }
-        $this->tmplt->addData('content', new utils\Template("adm/package/nav-package-types.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/package/nav-package-types.html", [
             'caption' => 'Select package type',
             'package-types' => $packageTypes
         ]));
@@ -100,21 +100,21 @@ class AdmPackage extends Administration
                 $messageTmplt->setData('message', 'Package ' . $model . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setData('message', 'Code ' . $model->getCode() . ' already exists. New package ' . $model . ' has not been created.');
             $messageTmplt->setData('type', 'war');
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->newForm($model);
         }
     }
 
     protected function editForm($model = null)
     {
-        $model = new model\Package($this->getParam(1));
+        $model = new model\Package($this->getParam(2));
         if ($model->getId()) {
-            $this->tmplt->addData('content', new utils\Template("adm/package/form.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/package/form.html", [
                 'caption' => 'New Package ' . $model->getCode(),
                 'operation' => 'edit/' . $model->getId(),
                 'code' => $model->getCode(),
@@ -126,7 +126,7 @@ class AdmPackage extends Administration
                 'description' => $model->getDescription()
             ]));
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Package to edit does not exist.'
             ]));
@@ -136,7 +136,7 @@ class AdmPackage extends Administration
 
     protected function edit()
     {
-        $model = new model\Package($this->getParam(1));
+        $model = new model\Package($this->getParam(2));
         $model->setCode(filter_input(INPUT_POST, 'code', FILTER_SANITIZE_STRING));
         $model->setType(filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING));
         $model->setWidth(filter_input(INPUT_POST, 'width', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
@@ -162,29 +162,29 @@ class AdmPackage extends Administration
                     'type' => 'err'
                 ]);
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'Code ' . $model->getCode() . ' already exists. Package ' . $model . ' has not been saved.',
                 'type' => 'war'
             ]);
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->editForm($model);
         }
     }
 
     protected function deleteQuestion()
     {
-        $model = new model\Package($this->getParam(1));
+        $model = new model\Package($this->getParam(2));
         if ($model->getId()) {
             $deleteQuestionTmplt = new utils\Template("adm/package/delete-yes-no.html", [
                 'id' => $model->getId(),
                 'package' => (string)$model
             ]);
-            $this->tmplt->addData('content', $deleteQuestionTmplt);
+            $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Package to delete does not exist.'
             ]));
@@ -194,7 +194,7 @@ class AdmPackage extends Administration
 
     protected function delete()
     {
-        $model = new model\Package($this->getParam(1));
+        $model = new model\Package($this->getParam(2));
         $messageTmplt = new utils\Template("adm/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
@@ -213,7 +213,7 @@ class AdmPackage extends Administration
                 'type' => 'err'
             ]);
         }
-        $this->tmplt->setData('content', $messageTmplt);
+        $this->adminTmplt->setData('content', $messageTmplt);
         $this->table();
     }
 
@@ -240,12 +240,12 @@ class AdmPackage extends Administration
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->tmplt->addData('content', new utils\Template("adm/package/table.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/package/table.html", [
             'caption' => 'Package List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

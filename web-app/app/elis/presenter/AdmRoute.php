@@ -16,7 +16,7 @@ class AdmRoute extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'Route Administration');
+        $this->pageTmplt->setData('title', 'Route Administration');
     }
 
     public function newForm($model = null)
@@ -31,7 +31,7 @@ class AdmRoute extends Administration
             ]);
             $vehicles .= (string)$vehiclesTmplt;
         }
-        $this->tmplt->addData('content', new utils\Template("adm/route/form.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/route/form.html", [
             'caption' => 'New Route',
             'operation' => 'new',
             'name' => $model instanceof model\Route ? $model->getName() : '',
@@ -62,19 +62,19 @@ class AdmRoute extends Administration
                 $messageTmplt->setData('message', 'Route ' . $model . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setData('message', 'Code ' . $model->getCode() . ' already exists. New route ' . $model . ' has not been created.');
             $messageTmplt->setData('type', 'war');
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->newForm($model);
         }
     }
 
     protected function editForm($model = null)
     {
-        $model = new model\Route($this->getParam(1));
+        $model = new model\Route($this->getParam(2));
         if ($model->getId()) {
             $vehicles = '';
             $vehiclesTmplt = new utils\Template("adm/route/form-option.html");
@@ -86,7 +86,7 @@ class AdmRoute extends Administration
                 ]);
                 $vehicles .= (string)$vehiclesTmplt;
             }
-            $this->tmplt->addData('content', new utils\Template("adm/route/form.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/route/form.html", [
                 'caption' => 'Edit Route',
                 'operation' => 'edit/' . $model->getId(),
                 'name' => $model->getName(),
@@ -95,7 +95,7 @@ class AdmRoute extends Administration
                 'description' => $model->getDescription()
             ]));
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Route to edit does not exist.'
             ]));
@@ -105,7 +105,7 @@ class AdmRoute extends Administration
 
     protected function edit()
     {
-        $model = new model\Route($this->getParam(1));
+        $model = new model\Route($this->getParam(2));
         $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $model->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
         $model->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
@@ -128,29 +128,29 @@ class AdmRoute extends Administration
                     'type' => 'err'
                 ]);
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'Name ' . $model->getCode() . ' already exists. route ' . $model . ' has not been saved.',
                 'type' => 'war'
             ]);
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->editForm($model);
         }
     }
 
     protected function deleteQuestion()
     {
-        $model = new model\Route($this->getParam(1));
+        $model = new model\Route($this->getParam(2));
         if ($model->getId()) {
             $deleteQuestionTmplt = new utils\Template("adm/route/delete-yes-no.html", [
                 'id' => $model->getId(),
                 'route' => (string)$model
             ]);
-            $this->tmplt->addData('content', $deleteQuestionTmplt);
+            $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'Route to delete does not exist.'
             ]));
@@ -160,7 +160,7 @@ class AdmRoute extends Administration
 
     protected function delete()
     {
-        $model = new model\Route($this->getParam(1));
+        $model = new model\Route($this->getParam(2));
         $messageTmplt = new utils\Template("adm/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
@@ -179,7 +179,7 @@ class AdmRoute extends Administration
                 'type' => 'err'
             ]);
         }
-        $this->tmplt->setData('content', $messageTmplt);
+        $this->adminTmplt->setData('content', $messageTmplt);
         $this->table();
     }
 
@@ -207,12 +207,12 @@ class AdmRoute extends Administration
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->tmplt->addData('content', new utils\Template("adm/route/table.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/route/table.html", [
             'caption' => 'Route List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

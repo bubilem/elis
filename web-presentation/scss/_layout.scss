@@ -1,0 +1,13 @@
+div.content {
+  width: 100%;
+  padding: 1em 2em;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  div.content {
+    width: 800px;
+    padding: 1em 2em;
+    margin: 0;
+  }
+}

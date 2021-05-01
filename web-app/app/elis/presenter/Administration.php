@@ -12,18 +12,38 @@ abstract class Administration extends Main
 {
 
     /**
-     * Main page template
+     * Administration template
      *
      * @var utils\Template
      */
-    protected $tmplt;
+    protected $adminTmplt;
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt = new utils\Template("adm/administration.html");
-        $this->tmplt->setData('lang', utils\Conf::get("DEF_LANG"));
-        $this->tmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
+        $this->adminTmplt = new utils\Template("adm/administration.html");
+        new utils\Template("adm/menu.html");
+        $menuItem = new utils\Template("adm/menu-item.html");
+        $menuItems = "";
+        foreach ([
+            "dashboard" => "dashboard",
+            "adm-user" => "users",
+            "adm-vehicle" => "vehicles",
+            "adm-place" => "places",
+            "adm-package" => "packages",
+            "adm-route" => "routes",
+            "adm-event" => "events",
+        ] as $href => $label) {
+            $menuItem->clearData()->setAllData([
+                'href' => $href,
+                'label' => $label,
+                'active' => $this->getParam(0) == $href ? 'active' : ''
+            ]);
+            $menuItems .= $menuItem;
+        }
+        $this->adminTmplt->setData('menu', new utils\Template("adm/menu.html", [
+            'menu-items' => $menuItems
+        ]));
     }
 
     /**
@@ -33,21 +53,22 @@ abstract class Administration extends Main
      */
     public function run()
     {
-        if (empty($this->getParam(0))) {
+        if (empty($this->getParam(1))) {
             $this->table();
         } else {
-            $methodName = utils\Str::toCamelCase($this->getParam(0), "-", true);
+            $methodName = utils\Str::toCamelCase($this->getParam(1), "-", true);
             if (method_exists($this, $methodName)) {
                 $this->$methodName();
             } else {
-                $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+                $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                     'message' => 'Bad parameter',
                     'type' => 'err'
                 ]));
                 $this->table();
             }
         }
-        echo $this->tmplt;
+        $this->pageTmplt->setData('main', $this->adminTmplt);
+        echo $this->pageTmplt;
     }
 
     protected abstract function newForm($model = null);

@@ -2,7 +2,7 @@
 
 namespace elis\presenter;
 
-use elis\utils\db;
+use elis\utils;
 
 /**
  * Main presenter
@@ -19,6 +19,13 @@ abstract class Main
     protected $params;
 
     /**
+     * Page Main Temaplate
+     *
+     * @param utils\Template $pageTmplt
+     */
+    protected $pageTmplt;
+
+    /**
      * Constructor
      *
      * @param array $params
@@ -26,6 +33,9 @@ abstract class Main
     public function __construct(array $params)
     {
         $this->params = $params;
+        $this->pageTmplt = new utils\Template("page.html");
+        $this->pageTmplt->setData('lang', utils\Conf::get("DEF_LANG"));
+        $this->pageTmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
     }
 
     /**
@@ -33,8 +43,8 @@ abstract class Main
      */
     public function __destruct()
     {
-        if (db\MySQL::isConnected()) {
-            db\MySQL::close();
+        if (utils\db\MySQL::isConnected()) {
+            utils\db\MySQL::close();
         }
     }
 

@@ -19,8 +19,8 @@ class Home extends Main
     public function run()
     {
         $tmplt = new utils\Template("page/home.html");
-        $tmplt->setData('lang', utils\Conf::get("DEF_LANG"));
-        $tmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
-        echo $tmplt;
+        $this->pageTmplt->setData('title', 'European Logistic Information System');
+        $this->pageTmplt->setData('main', $tmplt);
+        echo $this->pageTmplt;
     }
 }

@@ -24,7 +24,7 @@ class Router
         if (empty($params[0])) {
             (new presenter\Home([]))->run();
         } else {
-            $classClassName = 'elis\\presenter\\' . utils\Str::toCamelCase(array_shift($params));
+            $classClassName = 'elis\\presenter\\' . utils\Str::toCamelCase($params[0]);
             try {
                 $presenter = new $classClassName($params);
                 if (method_exists($classClassName, 'run')) {

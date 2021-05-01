@@ -16,7 +16,7 @@ class AdmUser extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->tmplt->setData('title', 'User Administration');
+        $this->pageTmplt->setData('title', 'User Administration');
     }
 
     protected function newForm($model = null)
@@ -33,7 +33,7 @@ class AdmUser extends Administration
             ]);
             $checkboxes .= $checkboxTmplt;
         }
-        $this->tmplt->addData('content', new utils\Template("adm/user/form.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/user/form.html", [
             'caption' => 'New User',
             'operation' => 'new',
             'name' => $model instanceof model\User ? $model->getName() : '',
@@ -75,19 +75,19 @@ class AdmUser extends Administration
                 $messageTmplt->setData('message', 'User ' . $user . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setData('message', 'Email ' . $user->getEmail() . ' already exists. New user ' . $user . ' has not been created.');
             $messageTmplt->setData('type', 'war');
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->newForm($user);
         }
     }
 
     protected function editForm($model = null)
     {
-        $model = new model\User($this->getParam(1));
+        $model = new model\User($this->getParam(2));
         if ($model->getId()) {
             $roles = new model\CodeList("user-roles.json");
             $checkboxTmplt = new utils\Template("adm/user/role-checkbox.html");
@@ -101,7 +101,7 @@ class AdmUser extends Administration
                 ]);
                 $checkboxes .= $checkboxTmplt;
             }
-            $this->tmplt->addData('content', new utils\Template("adm/user/form.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/user/form.html", [
                 'caption' => 'Edit User ' . $model,
                 'operation' => 'edit/' . $model->getId(),
                 'name' => (string)$model->getName(),
@@ -111,7 +111,7 @@ class AdmUser extends Administration
                 'role-checkboxes' => $checkboxes
             ]));
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'User to edit does not exist.'
             ]));
@@ -121,7 +121,7 @@ class AdmUser extends Administration
 
     protected function edit()
     {
-        $user = new model\User($this->getParam(1));
+        $user = new model\User($this->getParam(2));
         $user->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $user->setSurname(filter_input(INPUT_POST, 'surname', FILTER_SANITIZE_STRING));
         $user->setEmail(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
@@ -156,29 +156,29 @@ class AdmUser extends Administration
                     'type' => 'err'
                 ]);
             }
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
             $messageTmplt->setAllData([
                 'message' => 'Email ' . $user->getEmail() . ' already exists. User ' . $user . ' has not been saved.',
                 'type' => 'war'
             ]);
-            $this->tmplt->addData('content', $messageTmplt);
+            $this->adminTmplt->addData('content', $messageTmplt);
             $this->editForm($user);
         }
     }
 
     protected function deleteQuestion()
     {
-        $user = new model\User($this->getParam(1));
+        $user = new model\User($this->getParam(2));
         if ($user->getId()) {
             $deleteQuestionTmplt = new utils\Template("adm/user/delete-yes-no.html", [
                 'id' => $user->getId(),
                 'user' => (string)$user
             ]);
-            $this->tmplt->addData('content', $deleteQuestionTmplt);
+            $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'err',
                 'message' => 'User to delete does not exist.'
             ]));
@@ -188,7 +188,7 @@ class AdmUser extends Administration
 
     protected function delete()
     {
-        $user = new model\User($this->getParam(1));
+        $user = new model\User($this->getParam(2));
         $messageTmplt = new utils\Template("adm/message.html");
         if ($user->getId()) {
             $messageTmplt->setAllData([
@@ -207,7 +207,7 @@ class AdmUser extends Administration
                 'type' => 'err'
             ]);
         }
-        $this->tmplt->setData('content', $messageTmplt);
+        $this->adminTmplt->setData('content', $messageTmplt);
         $this->table();
     }
 
@@ -234,12 +234,12 @@ class AdmUser extends Administration
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->tmplt->addData('content', new utils\Template("adm/user/table.html", [
+        $this->adminTmplt->addData('content', new utils\Template("adm/user/table.html", [
             'caption' => 'User List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->tmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

@@ -12,7 +12,14 @@ if (!key_exists($page, $reg) || !file_exists("content/$page.html")) {
 <html lang="en">
 
 <head>
-    <title><?php echo $reg[$page]['title']; ?> | Projekt</title>
+    <title>
+        <?php
+        echo $reg[$page]['title'];
+        if ($page != "home") {
+            echo " | School project";
+        }
+        ?>
+    </title>
     <meta name="description" content="<?php echo $reg[$page]['description']; ?>">
     <meta name="author" content="3IT, VOŠ, SPŠ a SOŠ Varnsdorf">
     <meta charset="UTF-8" />

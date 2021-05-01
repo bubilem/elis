@@ -1,0 +1,67 @@
+form {
+  font-size: 0.9em;
+  margin: 0.5em 0;
+  > .items {
+    display: grid;
+    grid-template-columns: 1fr 10fr;
+    justify-items: stretch;
+    align-items: center;
+    justify-content: stretch;
+    align-content: start;
+    column-gap: 1em;
+    row-gap: 1em;
+    > label {
+      text-align: right;
+      &[for]:not([for=""]) {
+        cursor: pointer;
+      }
+    }
+    > input,
+    > textarea {
+      padding: 0.5em;
+      border: none;
+      border-radius: 0.25em;
+      color: $color;
+      background: $lighter-color;
+      &[type="submit"] {
+        font-size: 1.2em;
+        padding: 0.5em;
+        color: $btn-color;
+        background: $btn-background;
+        &:hover {
+          color: $btn-color-hover;
+          background: $btn-background-hover;
+        }
+      }
+    }
+    > select {
+      color: $color;
+      background: $lighter-color;
+      > option {
+        color: #222;
+      }
+    }
+    .checkboxes {
+      padding: 0.5em 0;
+      > div {
+        padding: 0.25em 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        label {
+          padding-left: 0.5em;
+          cursor: pointer;
+        }
+        input {
+          cursor: pointer;
+        }
+      }
+    }
+    > select {
+      padding: 0.5em;
+      border: none;
+      border-radius: 0.25em;
+    }
+  }
+}

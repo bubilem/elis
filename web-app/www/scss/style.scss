@@ -1,0 +1,31 @@
+/* COLORS */
+$color: #b1ada2;
+$background-color: #2b2f31;
+$darker-color: rgba(0, 0, 0, 0.1);
+$lighter-color: rgba(255, 255, 255, 0.1);
+/* link */
+$link-color: #277;
+$link-color-hover: #555;
+/* link - button */
+$btn-color: #eee;
+$btn-background: #277;
+/* link - button - hover */
+$btn-color-hover: #fff;
+$btn-background-hover: #555;
+/* link - button - active */
+$btn-color-active: #eee;
+$btn-background-active: #555;
+/* WEIGTH */
+$normal-weight: 300;
+$bold-weight: 700;
+/* BREAK-POINTS */
+$breakpoint: 768px;
+$max-width: 1200px;
+
+@import "reset";
+@import "typo";
+@import "form";
+@import "table";
+@import "header";
+@import "footer";
+@import "admin";
