@@ -38,7 +38,7 @@ class AdmVehicle extends Administration
         $model->setUid(filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING));
         $model->setMileage(filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT));
         $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameUidVehicle = (new db\Select())
             ->setSelect('id')
             ->setFrom('vehicle')
@@ -75,7 +75,7 @@ class AdmVehicle extends Administration
                 'avg_consuption' => (float)$model->getAvgConsuption()
             ]));
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Vehicle to edit does not exist.'
             ]));
@@ -90,7 +90,7 @@ class AdmVehicle extends Administration
         $model->setUid(filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING));
         $model->setMileage(filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT));
         $model->setAvgConsuption(filter_input(INPUT_POST, 'avg_consuption', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameUidVehicle = (new db\Select())
             ->setSelect('id')
             ->setFrom('vehicle')
@@ -130,7 +130,7 @@ class AdmVehicle extends Administration
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Vehicle to delete does not exist.'
             ]));
@@ -141,7 +141,7 @@ class AdmVehicle extends Administration
     protected function delete()
     {
         $model = new model\Vehicle($this->getParam(2));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Vehicle $model has been deleted.",
@@ -189,7 +189,7 @@ class AdmVehicle extends Administration
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

@@ -1,4 +1,10 @@
 header {
   padding: 0.5em 0;
   background-color: $darker-color;
+  > div > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

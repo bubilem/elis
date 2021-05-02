@@ -48,7 +48,7 @@ class AdmRoute extends Administration
         $model->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
         $model->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
         $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameNameRoute = (new db\Select())
             ->setSelect('id')
             ->setFrom('route')
@@ -95,7 +95,7 @@ class AdmRoute extends Administration
                 'description' => $model->getDescription()
             ]));
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Route to edit does not exist.'
             ]));
@@ -110,7 +110,7 @@ class AdmRoute extends Administration
         $model->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
         $model->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
         $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameName = (new db\Select())
             ->setSelect('id')
             ->setFrom('route')
@@ -150,7 +150,7 @@ class AdmRoute extends Administration
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Route to delete does not exist.'
             ]));
@@ -161,7 +161,7 @@ class AdmRoute extends Administration
     protected function delete()
     {
         $model = new model\Route($this->getParam(2));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Route $model has been deleted.",
@@ -212,7 +212,7 @@ class AdmRoute extends Administration
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

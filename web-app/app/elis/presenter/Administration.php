@@ -2,6 +2,7 @@
 
 namespace elis\presenter;
 
+use elis\controller\Router;
 use elis\utils;
 
 /**
@@ -21,6 +22,9 @@ abstract class Administration extends Main
     public function __construct(array $params)
     {
         parent::__construct($params);
+        if (!$this->user->isInRole('ADM')) {
+            Router::redirect("error/401");
+        }
         $this->adminTmplt = new utils\Template("adm/administration.html");
         new utils\Template("adm/menu.html");
         $menuItem = new utils\Template("adm/menu-item.html");
@@ -60,7 +64,7 @@ abstract class Administration extends Main
             if (method_exists($this, $methodName)) {
                 $this->$methodName();
             } else {
-                $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+                $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                     'message' => 'Bad parameter',
                     'type' => 'err'
                 ]));

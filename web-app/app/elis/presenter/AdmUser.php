@@ -61,7 +61,7 @@ class AdmUser extends Administration
             }
         }
         $user->setRole($checkedRoles);
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameEmailUsers = (new db\Select())
             ->setSelect('id')
             ->setFrom('user')
@@ -111,7 +111,7 @@ class AdmUser extends Administration
                 'role-checkboxes' => $checkboxes
             ]));
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'User to edit does not exist.'
             ]));
@@ -138,7 +138,7 @@ class AdmUser extends Administration
             }
         }
         $user->setRole($checkedRoles);
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameEmailUsers = (new db\Select())
             ->setSelect('id')
             ->setFrom('user')
@@ -178,7 +178,7 @@ class AdmUser extends Administration
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'User to delete does not exist.'
             ]));
@@ -189,7 +189,7 @@ class AdmUser extends Administration
     protected function delete()
     {
         $user = new model\User($this->getParam(2));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         if ($user->getId()) {
             $messageTmplt->setAllData([
                 'message' => "User $user has been deleted.",
@@ -239,7 +239,7 @@ class AdmUser extends Administration
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

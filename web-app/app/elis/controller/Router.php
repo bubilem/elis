@@ -31,7 +31,7 @@ class Router
                     $presenter->run();
                 }
             } catch (Exception $e) {
-                (new presenter\Error(['404']))->run();
+                (new presenter\Error(['error', '404']))->run();
             }
         }
     }

@@ -3,7 +3,10 @@
 body {
   font-family: "Oswald", sans-serif;
   font-weight: $normal-weight;
-  font-size: 13pt;
+  font-size: 11pt;
+  @media screen and (min-width: $breakpoint) {
+    font-size: 13pt;
+  }
   color: $color;
   background: $background-color;
 }

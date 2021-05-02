@@ -28,7 +28,7 @@ class AdmPackage extends Administration
             }
             $packageType = (new model\CodeList("package-types.json"))->getItem($this->getParam(2));
             if ($packageType == null) {
-                $messageTmplt = new utils\Template("adm/message.html", [
+                $messageTmplt = new utils\Template("other/message.html", [
                     'message' => 'Wrong packet type definition.',
                     'type' => 'err'
                 ]);
@@ -86,7 +86,7 @@ class AdmPackage extends Administration
         $model->setLenght(filter_input(INPUT_POST, 'lenght', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setWeight(filter_input(INPUT_POST, 'weight', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameCodePackage = (new db\Select())
             ->setSelect('id')
             ->setFrom('package')
@@ -126,7 +126,7 @@ class AdmPackage extends Administration
                 'description' => $model->getDescription()
             ]));
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Package to edit does not exist.'
             ]));
@@ -144,7 +144,7 @@ class AdmPackage extends Administration
         $model->setLenght(filter_input(INPUT_POST, 'lenght', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setWeight(filter_input(INPUT_POST, 'weight', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameCodePackage = (new db\Select())
             ->setSelect('id')
             ->setFrom('package')
@@ -184,7 +184,7 @@ class AdmPackage extends Administration
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Package to delete does not exist.'
             ]));
@@ -195,7 +195,7 @@ class AdmPackage extends Administration
     protected function delete()
     {
         $model = new model\Package($this->getParam(2));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Package $model has been deleted.",
@@ -245,7 +245,7 @@ class AdmPackage extends Administration
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

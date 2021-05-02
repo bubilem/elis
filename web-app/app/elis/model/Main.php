@@ -82,6 +82,16 @@ abstract class Main
     }
 
     /**
+     * Clear all model data
+     *
+     * @return void
+     */
+    public function clearData()
+    {
+        $this->data = [];
+    }
+
+    /**
      * Dynamic get... set... clr... method service
      *
      * @param string $name the name of the called method

@@ -54,7 +54,7 @@ class AdmPlace extends Administration
         $model->setCityCode(filter_input(INPUT_POST, 'city_code', FILTER_SANITIZE_STRING));
         $model->setCountryCode(filter_input(INPUT_POST, 'country_code', FILTER_SANITIZE_STRING));
         $model->setGps(filter_input(INPUT_POST, 'gps', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameCodePlace = (new db\Select())
             ->setSelect('id')
             ->setFrom('place')
@@ -104,7 +104,7 @@ class AdmPlace extends Administration
                 'gps' => (string)$model->getGps()
             ]));
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Place to edit does not exist.'
             ]));
@@ -122,7 +122,7 @@ class AdmPlace extends Administration
         $model->setCityCode(filter_input(INPUT_POST, 'city_code', FILTER_SANITIZE_STRING));
         $model->setCountryCode(filter_input(INPUT_POST, 'country_code', FILTER_SANITIZE_STRING));
         $model->setGps(filter_input(INPUT_POST, 'gps', FILTER_SANITIZE_STRING));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         $sameCodePlace = (new db\Select())
             ->setSelect('id')
             ->setFrom('place')
@@ -162,7 +162,7 @@ class AdmPlace extends Administration
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
         } else {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Place to delete does not exist.'
             ]));
@@ -173,7 +173,7 @@ class AdmPlace extends Administration
     protected function delete()
     {
         $model = new model\Place($this->getParam(2));
-        $messageTmplt = new utils\Template("adm/message.html");
+        $messageTmplt = new utils\Template("other/message.html");
         if ($model->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Place $model has been deleted.",
@@ -221,7 +221,7 @@ class AdmPlace extends Administration
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->adminTmplt->addData('content', new utils\Template("adm/message.html", [
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

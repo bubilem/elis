@@ -2,6 +2,7 @@
 
 namespace elis\presenter;
 
+use elis\model;
 use elis\utils;
 
 /**
@@ -10,6 +11,13 @@ use elis\utils;
  */
 abstract class Main
 {
+
+    /**
+     * Undocumented variable
+     *
+     * @var model\User
+     */
+    protected $user;
 
     /**
      * Uri params
@@ -33,9 +41,12 @@ abstract class Main
     public function __construct(array $params)
     {
         $this->params = $params;
+        $this->user = new model\User();
+        $this->user->retainOrLogout($this);
         $this->pageTmplt = new utils\Template("page.html");
         $this->pageTmplt->setData('lang', utils\Conf::get("DEF_LANG"));
         $this->pageTmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
+        $this->pageTmplt->setData('user', $this->headerUserLoginLogoutLink());
     }
 
     /**
@@ -57,5 +68,24 @@ abstract class Main
     public function getParam(int $index)
     {
         return isset($this->params[$index]) ? $this->params[$index] : false;
+    }
+
+    public function headerUserLoginLogoutLink(): string
+    {
+        $linkTmpl = new utils\Template("other/link.html");
+        if ($this->user->empty()) {
+            $linkTmpl->setAllData([
+                'href' => 'login',
+                'label' => 'login'
+            ]);
+            $out = '';
+        } else {
+            $linkTmpl->setAllData([
+                'href' => 'logout',
+                'label' => 'logout'
+            ]);
+            $out = $this->user->getName() . ' ' . $this->user->getSurname() . ' ';
+        }
+        return $out . strval($linkTmpl);
     }
 }

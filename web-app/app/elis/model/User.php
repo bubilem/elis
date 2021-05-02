@@ -3,6 +3,8 @@
 namespace elis\model;
 
 use elis\utils\db;
+use elis\utils\db\Query;
+use elis\utils\Secure;
 
 /**
  * User model class
@@ -29,7 +31,7 @@ class User extends Main
         $result = (new db\Select())
             ->setSelect("*")->setFrom('user')->setWhere('id = ' . intval($pk))
             ->run();
-        if (isset($result[0]) && is_array($result[0]) && !empty($result[0])) {
+        if (!empty($result[0]) && is_array($result[0])) {
             $this->data = $result[0];
             $result = (new db\Select())
                 ->setSelect("role")->setFrom('user_has_role')->setWhere('user = ' . $this->getId())
@@ -114,6 +116,66 @@ class User extends Main
     public function isInRole(string $role): bool
     {
         return is_array($this->getRole()) && in_array($role, $this->getRole());
+    }
+
+    /**
+     * Login user
+     *
+     * @param string $email
+     * @param string $password
+     * @return bool success
+     */
+    public function login($email, $password)
+    {
+        if (!empty($email)) {
+            $result = (new db\Select())
+                ->setSelect("id")->setFrom('user')
+                ->setWhere("email = '$email' AND password = '" . Secure::hash($password) . "'")
+                ->run();
+            if (!empty($result[0]['id']) && $this->load($result[0]['id'])) {
+                $_SESSION['usr'] = $this->getId();
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retain user from session or Logout user
+     *
+     * @return void
+     */
+    public function retainOrLogout($presenter)
+    {
+        if ($presenter->getParam(0) == 'logout') {
+            $this->logout();
+        } else if (
+            $this->empty()
+            && !empty($_SESSION['usr'])
+            && $this->load(intval($_SESSION['usr']))
+        ) {
+            $_SESSION['usr'] = $this->getId();
+        }
+    }
+
+    /**
+     * Logout user
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        if (isset($_SESSION['usr'])) {
+            unset($_SESSION['usr']);
+        }
+        $this->clearData();
+    }
+
+    public function empty()
+    {
+        return $this->getId() ? false : true;
     }
 
     public function __toString()
