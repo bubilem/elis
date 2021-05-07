@@ -1,0 +1,88 @@
+<p>
+  We decided for OOP (Object-oriented programming), ORM (Object–relational mapping), MVP
+  (Model–view–controller).
+</p>
+<h2>Web application directory structure</h2>
+<p>
+  The directory structure is designed with respect to the object-oriented application and the
+  support of the MVC architecture.
+</p>
+<ul>
+  <li>
+    app/elis (elis source code directory)
+    <ul>
+      <li>controller (controller classes, main logic)</li>
+      <li>component (component classes for presenters, stand-alone units)</li>
+      <li>presenter (controller classes, preparing the pages, inserting data to templates)</li>
+      <li>model (ORM, database model classes)</li>
+      <li>template (html templates)</li>
+      <li>utils (support classes)</li>
+    </ul>
+  </li>
+  <li>code-lists (code lists for roles, event types, package states, countries…)</li>
+  <li>dict (dictionary files for localizing the application to other languages)</li>
+  <li>files (other files, reports…)</li>
+  <li>logs (system log files for monitoring)</li>
+  <li>
+    www (directory with web access)
+    <ul>
+      <li>css (generated minified cascade style sheets)</li>
+      <li>img (images, favicons…)</li>
+      <li>js (java script files)</li>
+      <li>scss (sass source files)</li>
+    </ul>
+  </li>
+</ul>
+<h2>URL structure</h2>
+<p>The web application supports COOL format URL addresses.</p>
+<table>
+  <tr>
+    <th>URL part</th>
+    <th>meaning</th>
+    <th>note</th>
+  </tr>
+  <tr>
+    <td>https://</td>
+    <td>protocol</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>elis.jid-project.eu</td>
+    <td>domain address</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>/presenter</td>
+    <td>main launch presenter</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>/parameter</td>
+    <td>first parameter</td>
+    <td>optional</td>
+  </tr>
+  <tr>
+    <td>/parameter</td>
+    <td>second parameter</td>
+    <td>optional</td>
+  </tr>
+  <tr>
+    <td>/parameter</td>
+    <td>third parameter</td>
+    <td>optional</td>
+  </tr>
+  <tr>
+    <td>?a=b&c=d</td>
+    <td>GET data</td>
+    <td>optional</td>
+  </tr>
+</table>
+<h2>Schemas</h2>
+<figure>
+  <img src="blog/04-app-architecture/elis-app-architecture.png" />
+  <figcaption>Application architecture</figcaption>
+</figure>
+<figure>
+  <img src="blog/04-app-architecture/elis_class_diagram_core.png" />
+  <figcaption>Core class diagram</figcaption>
+</figure>

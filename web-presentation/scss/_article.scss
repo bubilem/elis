@@ -1,0 +1,46 @@
+.article {
+  @media screen and (min-width: $breakpoint) {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto;
+    column-gap: 2em;
+    justify-content: stretch;
+    align-items: flex-start;
+  }
+  article {
+    .date {
+      font-size: 0.8em;
+    }
+    > ul {
+      list-style-type: square;
+      li {
+        margin: 0.1em 0.1em 0.1em 1.2em;
+      }
+    }
+    > table {
+      width: 100%;
+      th,
+      td {
+        padding: 0.2em 0.2em;
+        border-bottom: 1px #aaa solid;
+      }
+      th {
+        text-align: center;
+        font-style: italic;
+        border-top: 1px #aaa solid;
+      }
+    }
+  }
+  nav {
+    margin: 1em 0;
+    ul {
+      li {
+        margin: 0.3em 0;
+        font-family: "Oswald", sans-serif;
+        font-size: 1.2em;
+        font-weight: $bold-weight;
+        text-transform: uppercase;
+      }
+    }
+  }
+}

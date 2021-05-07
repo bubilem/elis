@@ -10,10 +10,14 @@ Options -Indexes
 # rewrite engine on
 RewriteEngine On
 
+#RewriteCond %{HTTPS} off [NC]
+#RewriteRule (.*) https://elis.jid-project.eu%{REQUEST_URI} [L,R=301,QSA]
+
 # disabling the contents of the files folder
 RewriteRule ^(.*/)?files/.* - [F]
 
-# redirecting to index.php
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule .* index.php [L,QSA]
+RewriteRule ^.*$ index.php [L,QSA]

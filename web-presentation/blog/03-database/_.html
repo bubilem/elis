@@ -1,0 +1,25 @@
+<p>
+  On our third meeting, we discussed the functionality of our database and reviewed it with our
+  polish co-workers. First, we designed a database that was too complicated, containing many tables
+  and relationships. After debate and analysis, we found that a lot of data in the system has
+  remained unchanged for a long time, so we chose the path of code lists using JSON files.
+</p>
+<h2>Tables (RMD)</h2>
+<p>main: user, route, event, vehicle, place, package, package_log</p>
+<p>rel: user_has_role, route_has_user</p>
+<h2>Code lists (JSON)</h2>
+<p>countries, event-types, languages, package-states, package-types, user-roles</p>
+<p>
+  <a href="https://github.com/bubilem/elis/tree/main/web-app/code-list"
+    >All code list JSON files.</a
+  >
+</p>
+
+<h2>DB scheme</h2>
+<figure>
+  <img src="blog/03-database/elis-db.png" />
+  <figcaption>E-R schema of ELIS database</figcaption>
+</figure>
+<p>
+  <a href="https://github.com/bubilem/elis/tree/main/database">Database scheme, source code...</a>
+</p>

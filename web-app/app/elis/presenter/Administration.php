@@ -24,6 +24,7 @@ abstract class Administration extends Main
         parent::__construct($params);
         if (!$this->user->isInRole('ADM')) {
             Router::redirect("error/401");
+            //Router::redirect("login");
         }
         $this->adminTmplt = new utils\Template("adm/administration.html");
         new utils\Template("adm/menu.html");

@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "School project about logistic",
+    "title": "The Journey Is The Destination",
     "description": "Student project on the connection of logistics and IT",
     "menu-item-name": "Home"
   },
@@ -12,7 +12,7 @@
   "blog": {
     "title": "Blog",
     "description": "Articles about project...",
-    "menu-item-name": "Super Blog"
+    "menu-item-name": "Blog"
   },
   "contacts": {
     "title": "Contacts",

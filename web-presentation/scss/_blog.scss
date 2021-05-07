@@ -1,0 +1,15 @@
+.blog {
+  @media screen and (min-width: $breakpoint) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1em 2em;
+    justify-content: stretch;
+    align-items: flex-start;
+  }
+  article {
+    .date {
+      font-size: 0.8em;
+    }
+  }
+}

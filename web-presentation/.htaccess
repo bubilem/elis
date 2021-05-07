@@ -5,5 +5,10 @@ Options -Indexes
    deny from all
 </Files>
 
-RewriteEngine On
+RewriteCond %{HTTPS} off [NC]
+RewriteRule (.*) https://www.jid-project.eu%{REQUEST_URI} [L,R=301,QSA]
+
+RewriteCond %{HTTP_HOST} ^jid-project\.eu [NC]
+RewriteRule (.*) https://www.jid-project.eu/$1 [R=301,QSA,L]
+
 RewriteRule ^sitemap\.xml$ sitemap.php [L]

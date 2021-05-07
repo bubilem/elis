@@ -1,51 +1,26 @@
-* {
-  margin: 0;
-  padding: 0;
-}
+/*colors*/
+$color: #2c3e50;
+$background-color: #fff;
+$alt-color: #000;
+$alt-background-color: #399;
+$link-color: #399;
+$link-color-hover: #155;
+$alt-link-color: #000;
+$alt-link-color-hover: #fff;
+/* WEIGTH */
+$normal-weight: 300;
+$bold-weight: 500;
+/* BREAK-POINTS */
+$breakpoint: 768px;
+$max-width: 1200px;
 
-header,
-footer {
-  background: #22aa99;
-}
-
-.content {
-  width: 100%;
-  padding: 0;
-  margin: 0 auto;
-  /*background: red;*/
-}
-.content > div {
-  padding: 1em 2em;
-}
-.content p {
-  text-align: justify;
-}
-
-header > .content > div {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header nav > ul {
-  list-style-type: none;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-header nav > ul a {
-  margin: 0 0.25em;
-  padding: 0.25em;
-}
-header h1 {
-  font-size: 3em;
-}
-
-@media (min-width: 900px) {
-  div.content {
-    width: 800px;
-  }
-}
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Oswald:wght@500&display=swap");
+@import "normalize";
+@import "typo";
+@import "header";
+@import "footer";
+@import "home";
+@import "elis";
+@import "blog";
+@import "article";
+@import "contacts";

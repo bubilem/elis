@@ -1,0 +1,38 @@
+{
+  "01-the-first-assignment-of-works": {
+    "title": "The first assignment of works",
+    "menu-item-name": "The first assignment of works",
+    "intro": "We started talking about working on the project. Everyone was in a positive mood and work topics were given to everybody without a problem.",
+    "date": "27. 11. 2020"
+  },
+  "02-logistics-scheme": {
+    "title": "Logistics scheme",
+    "menu-item-name": "Logistics scheme",
+    "intro": "We have now worked on the principles of logistics together with students from both schools.",
+    "date": "11. 12. 2020"
+  },
+  "03-database": {
+    "title": "We are creating the database of ELIS",
+    "menu-item-name": "Database for ELIS",
+    "intro": "On our second meeting, we discussed the functionality of our database and reviewed it with our polish co-workers.",
+    "date": "8. 1. 2021"
+  },
+  "04-app-architecture": {
+    "title": "We design the basic architecture of the web application",
+    "menu-item-name": "Architecture of the ELIS",
+    "intro": "We decided for OOP (Object-oriented programming), ORM (Object–relational mapping), MVP (Model–view–controller).",
+    "date": "22. 1. 2021"
+  },
+  "05-logo": {
+    "title": "We design the project logo",
+    "menu-item-name": "Project logo design",
+    "intro": "In order to create a website and other promotional materials, we design a project logo.",
+    "date": "12. 2. 2021"
+  },
+  "06-web-presentation": {
+    "title": "Web presentation",
+    "menu-item-name": "Web presentation",
+    "intro": "We create a web presentation so that we can present the project and document it on an ongoing basis.",
+    "date": "26. 2. 2021"
+  }
+}

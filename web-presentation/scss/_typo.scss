@@ -1,0 +1,74 @@
+body {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  color: $color;
+  background: $background-color;
+  font-size: 18px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Oswald", sans-serif;
+  font-weight: $bold-weight;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: 1.8em;
+}
+h2 {
+  font-size: 1.4em;
+}
+h3 {
+  font-size: 1.2em;
+}
+
+p {
+  margin: 0.5em 0;
+  line-height: 1.3em;
+  text-align: justify;
+}
+
+strong,
+b {
+  font-family: "Oswald", sans-serif;
+  font-weight: $bold-weight;
+}
+
+a {
+  color: $link-color;
+  text-decoration: underline;
+  transition: color 0.3s ease-in-out;
+  &:hover {
+    color: $link-color-hover;
+    text-decoration: underline;
+  }
+}
+
+.content {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  > div {
+    padding: 1em;
+  }
+  article {
+    h1,
+    h2 {
+      margin: 1em 0 0 0;
+    }
+  }
+}
+
+figure {
+  display: block;
+  margin: 1em 0;
+  padding: 0;
+  img {
+    width: 100%;
+  }
+  figcaption {
+    font-size: 0.8em;
+    font-style: italic;
+  }
+}

@@ -1,0 +1,70 @@
+header {
+  color: $alt-color;
+  background: $alt-background-color;
+  .content > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1em 1em;
+    justify-content: stretch;
+    align-items: center;
+    grid-template-areas:
+      "a-logo a-caption"
+      "a-nav a-nav";
+    @media screen and (min-width: $breakpoint) {
+      grid-template-columns: 1fr 3fr 1fr;
+      grid-template-areas: "a-logo a-nav a-caption";
+    }
+    .logo {
+      grid-area: a-logo;
+      img {
+        height: 5em;
+        @media screen and (min-width: $breakpoint) {
+          height: 7em;
+        }
+      }
+    }
+    .caption {
+      grid-area: a-caption;
+      h1,
+      h2 {
+        color: $alt-color;
+        text-align: right;
+        font-size: 2em;
+        text-transform: uppercase;
+        @media screen and (min-width: $breakpoint) {
+          font-size: 3em;
+        }
+      }
+    }
+    nav {
+      grid-area: a-nav;
+      ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+        li {
+          a {
+            font-family: "Oswald", sans-serif;
+            font-size: 1.5em;
+            font-weight: $bold-weight;
+            color: $alt-link-color;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 0em;
+            margin: 0 0.25em;
+            @media screen and (min-width: $breakpoint) {
+              font-size: 1.8em;
+            }
+            &.actual,
+            &:hover {
+              color: $alt-link-color-hover;
+            }
+          }
+        }
+      }
+    }
+  }
+}

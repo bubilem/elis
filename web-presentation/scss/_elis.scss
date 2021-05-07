@@ -1,0 +1,18 @@
+.elis {
+  @media screen and (min-width: $breakpoint) {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1em 2em;
+    justify-content: stretch;
+    align-items: flex-start;
+  }
+  nav {
+    margin: 1em 0;
+    h3 {
+      margin: 1em 0 0 0;
+    }
+    p {
+      text-align: left;
+    }
+  }
+}
