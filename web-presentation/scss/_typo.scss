@@ -1,6 +1,6 @@
 body {
   font-family: "Open Sans", sans-serif;
-  font-weight: 300;
+  font-weight: $normal-weight;
   color: $color;
   background: $background-color;
   font-size: 18px;
@@ -37,7 +37,7 @@ b {
 
 a {
   color: $link-color;
-  text-decoration: underline;
+  text-decoration: none;
   transition: color 0.3s ease-in-out;
   &:hover {
     color: $link-color-hover;

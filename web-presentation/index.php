@@ -128,7 +128,7 @@ if ($article) {
                     </ul>
                 </nav>
                 <div class="c1">VOŠ, SPŠ a SOŠ Varnsdorf, p. o., Bratislavská 2166, 407 47 Varnsdorf, ČR</div>
-                <div class="c2">ZESPOL SZKOL ZAWODOWYCH IM. SANDORA PETOFI W OSTRODZIE, Polsko</div>
+                <div class="c2">Zespół Szkół Zawodowych im. Sandora Petöfi w Ostródzie</div>
             </div>
         </div>
     </footer>
