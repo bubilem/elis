@@ -1,0 +1,17 @@
+<h2>{caption}</h2>
+<form action="dsp-route/{operation}" method="POST">
+  <div class="items">
+    <label for="user">User</label>
+    <select id="user" name="user">
+      {users}
+    </select>
+    <label for="role">Role</label>
+    <select id="role" name="role">
+      {roles}
+    </select>
+    <div>
+      <input type="hidden" name="type" value="{type}" />
+    </div>
+    <input class="btn" type="submit" value="Add user to route" />
+  </div>
+</form>

@@ -8,13 +8,13 @@ use elis\utils;
  * Dashboard presenter
  * @version 0.0.1 201223 created
  */
-class Dashboard extends Administration
+class AdmDashboard extends Administration
 {
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', "Dashboard");
+        $this->pageTmplt->setData('title', "Administration Dashboard");
         $this->adminTmplt->setData('content', "Hello in ELIS administration.");
     }
 

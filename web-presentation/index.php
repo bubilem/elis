@@ -1,4 +1,5 @@
 <?php
+$ver = 210518;
 $pages = json_decode(file_get_contents("pages/register.json"), true);
 $articles = json_decode(file_get_contents("blog/register.json"), true);
 $page = strtolower(filter_input(INPUT_GET, "p"));
@@ -29,9 +30,14 @@ if ($article) {
     ?>
     <meta charset="utf-8" />
     <meta name="robots" content="index, follow" />
+
+    <meta property="og:site_name" content="The Journey is The Destination">
+    <meta property="og:type" content="<?php echo $article ? 'article' : 'website'; ?>">
+    
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="3IT, VOŠ, SPŠ a SOŠ Varnsdorf" />
-    <link href="css/style.min.css" rel="stylesheet" />
+    <link href="css/style.min.css<?php echo "?v=$ver"; ?>" rel="stylesheet" />
 </head>
 
 <body>
@@ -39,7 +45,7 @@ if ($article) {
         <div class="content">
             <div>
                 <a class="logo" href="">
-                    <img src="img/jid-project-logo.png" alt="JID project logo" />
+                    <img src="img/jid-project-logo.png<?php echo "?v=$ver"; ?>" alt="JID project logo" />
                 </a>
                 <nav>
                     <ul>
@@ -129,6 +135,9 @@ if ($article) {
                 </nav>
                 <div class="c1">VOŠ, SPŠ a SOŠ Varnsdorf, p. o., Bratislavská 2166, 407 47 Varnsdorf, ČR</div>
                 <div class="c2">Zespół Szkół Zawodowych im. Sandora Petöfi w Ostródzie</div>
+            </div>
+            <div>
+                <p class="version">ver: <?php echo $ver; ?></p>
             </div>
         </div>
     </footer>

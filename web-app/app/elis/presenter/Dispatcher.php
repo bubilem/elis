@@ -6,35 +6,34 @@ use elis\controller\Router;
 use elis\utils;
 
 /**
- * Main administration presenter
- * @version 0.0.1 201223 created
+ * Dispatcher administration presenter
+ * @version 0.0.1 210610 created
  */
-abstract class Administration extends Main
+abstract class Dispatcher extends Main
 {
 
     /**
-     * Administration template
+     * Dispatcher template
      *
      * @var utils\Template
      */
-    protected $adminTmplt;
+    protected $dspTmplt;
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        if (!$this->user->isInRole('ADM')) {
+        if (!$this->user->isInRole('ADM') && !$this->user->isInRole('DSP')) {
             Router::redirect("error/401");
-            //Router::redirect("login");
         }
-        $this->adminTmplt = new utils\Template("adm/administration.html");
-        new utils\Template("adm/menu.html");
-        $menuItem = new utils\Template("adm/menu-item.html");
+        $this->dspTmplt = new utils\Template("dsp/administration.html");
+        new utils\Template("dsp/menu.html");
+        $menuItem = new utils\Template("dsp/menu-item.html");
         $menuItems = "";
         foreach ([
-            "adm-dashboard" => "dashboard",
-            "adm-user" => "users",
-            "adm-vehicle" => "vehicles",
-            "adm-place" => "places"
+            "dsp-dashboard" => "dashboard",
+            "dsp-route" => "routes",
+            "dsp-package" => "packages",
+            "dsp-event" => "events"
         ] as $href => $label) {
             $menuItem->clearData()->setAllData([
                 'href' => $href,
@@ -43,7 +42,7 @@ abstract class Administration extends Main
             ]);
             $menuItems .= $menuItem;
         }
-        $this->adminTmplt->setData('menu', new utils\Template("adm/menu.html", [
+        $this->dspTmplt->setData('menu', new utils\Template("dsp/menu.html", [
             'menu-items' => $menuItems
         ]));
     }
@@ -62,28 +61,16 @@ abstract class Administration extends Main
             if (method_exists($this, $methodName)) {
                 $this->$methodName();
             } else {
-                $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
+                $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
                     'message' => 'Bad parameter',
                     'type' => 'err'
                 ]));
                 $this->table();
             }
         }
-        $this->pageTmplt->setData('main', $this->adminTmplt);
+        $this->pageTmplt->setData('main', $this->dspTmplt);
         echo $this->pageTmplt;
     }
-
-    protected abstract function newForm($model = null);
-
-    protected abstract function new();
-
-    protected abstract function editForm($model = null);
-
-    protected abstract function edit();
-
-    protected abstract function deleteQuestion();
-
-    protected abstract function delete();
 
     protected abstract function table();
 }
