@@ -1,7 +1,7 @@
 {
   "ACP": "accepted (start state)",
-  "TRN": "transported - in vehicle",
   "WTG": "waiting - ready for transport",
+  "TRN": "transported - in vehicle",
   "DMG": "damaged",
   "DST": "destroyed (end state)",
   "FRW": "forwarded (end state)"

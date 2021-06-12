@@ -28,7 +28,7 @@ abstract class Administration extends Main
         }
         $this->adminTmplt = new utils\Template("adm/administration.html");
         new utils\Template("adm/menu.html");
-        $menuItem = new utils\Template("adm/menu-item.html");
+        $menuItem = new utils\Template("other/menu-item.html");
         $menuItems = "";
         foreach ([
             "adm-dashboard" => "dashboard",
@@ -43,7 +43,7 @@ abstract class Administration extends Main
             ]);
             $menuItems .= $menuItem;
         }
-        $this->adminTmplt->setData('menu', new utils\Template("adm/menu.html", [
+        $this->adminTmplt->setData('menu', new utils\Template("other/menu.html", [
             'menu-items' => $menuItems
         ]));
     }

@@ -5,6 +5,7 @@ namespace elis\presenter;
 use elis\model;
 use elis\utils;
 use elis\utils\db;
+use elis\utils\Template;
 
 /**
  * Package dispatcher administration presenter
@@ -86,6 +87,7 @@ class DspPackage extends Dispatcher
         $model->setLenght(filter_input(INPUT_POST, 'lenght', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setWeight(filter_input(INPUT_POST, 'weight', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
         $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        $model->setState('ACP');
         $messageTmplt = new utils\Template("other/message.html");
         $sameCodePackage = (new db\Select())
             ->setSelect('id')
@@ -96,6 +98,7 @@ class DspPackage extends Dispatcher
             if ($model->save()) {
                 $messageTmplt->setData('message', 'Package ' . $model . ' has been created.');
                 $messageTmplt->setData('type', 'suc');
+                $model->createLog("ACP")->save();
             } else {
                 $messageTmplt->setData('message', 'Package ' . $model . ' has not been created.');
                 $messageTmplt->setData('type', 'err');
@@ -217,26 +220,106 @@ class DspPackage extends Dispatcher
         $this->table();
     }
 
-    protected function table()
+    protected function toWtg()
     {
-        $tableRowTmplt = new utils\Template("dsp/package/table-row.html");
+        $model = new model\Package($this->getParam(2));
+        $messageTmplt = new utils\Template("other/message.html");
+        if ($model->getId()) {
+            $model->setState('WTG');
+            if ($model->save()) {
+                $model->createLog("WTG")->save();
+                $messageTmplt->setAllData([
+                    'message' => "State of package $model has been setted to WTG.",
+                    'type' => 'suc'
+                ]);
+            } else {
+                $messageTmplt->setAllData([
+                    'message' => "State of package $model has not been setted to WTG.",
+                    'type' => 'err'
+                ]);
+            }
+        } else {
+            $messageTmplt->setAllData([
+                'message' => "Package to change does not exist.",
+                'type' => 'err'
+            ]);
+        }
+        $this->dspTmplt->setData('content', $messageTmplt);
+        $this->table();
+    }
+
+    public function log()
+    {
+        $model = new model\Package($this->getParam(2));
+        if (!$model->getId()) {
+            $messageTmplt = new utils\Template("other/message.html");
+            $messageTmplt->setAllData([
+                'message' => "Package does not exist.",
+                'type' => 'err'
+            ]);
+            $this->dspTmplt->setData('content', $messageTmplt);
+            $this->table();
+        }
+        $tableRowTmplt = new utils\Template("dsp/package/log-table-row.html");
         $rows = '';
         $query = (new db\Select())
-            ->setSelect("*")
-            ->setFrom("package")
-            ->setOrder('code DESC');
+            ->setSelect("l.*, e.type eventtype")
+            ->setFrom("package_log l LEFT JOIN event e ON l.event = e.id")
+            ->setWhere("l.package = " . $model->getId())
+            ->setOrder('l.date DESC');
         $queryResult = $query->run();
         if (is_array($queryResult)) {
             foreach ($queryResult as $record) {
                 $tableRowTmplt->clearData()->setAllData([
                     'id' => $record['id'],
+                    'date' => $record['date'],
+                    'package' => $record['package'],
+                    'state' => $record['state'],
+                    'event' => $record['eventtype']
+                ]);
+                $rows .= $tableRowTmplt;
+            }
+        }
+        $this->dspTmplt->addData('content', new utils\Template("dsp/package/log-table.html", [
+            'caption' => "Package $model log",
+            'rows' => $rows
+        ]));
+        if (empty($rows)) {
+            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+                'type' => 'std',
+                'message' => 'There is no record in the database'
+            ]));
+        }
+    }
+
+    protected function table()
+    {
+        $tableRowTmplt = new utils\Template("dsp/package/table-row.html");
+        $rows = '';
+        $query = (new db\Select())
+            ->setSelect("p.*, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
+            ->setFrom("package p JOIN package_log l ON p.id = l.package")
+            ->setGroup('p.id')
+            ->setOrder('p.id DESC');
+        $queryResult = $query->run();
+        if (is_array($queryResult)) {
+            $btnLink = new Template("other/link-btn.html", ['caption' => 'WTG']);
+            foreach ($queryResult as $record) {
+                $tableRowTmplt->clearData()->setAllData([
+                    'id' => $record['id'],
                     'code' => $record['code'],
                     'type' => $record['type'],
-                    'code' => $record['code'],
+                    'state' => $record['laststate'],
                     'dimension' => implode(' x ', [$record['width'], $record['height'], $record['lenght']]),
                     'weight' => $record['weight'],
                     'description' => $record['description']
                 ]);
+                if ($record['laststate'] == 'ACP') {
+                    $btnLink->setData('href', 'dsp-package/to-wtg/' . $record['id']);
+                    $tableRowTmplt->setData('wtg', $btnLink);
+                } else {
+                    $tableRowTmplt->setData('wtg', '');
+                }
                 $rows .= $tableRowTmplt;
             }
         }

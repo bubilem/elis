@@ -7,7 +7,7 @@ use elis\utils;
 
 /**
  * Main presenter
- * @version 0.0.1 201121 created
+ * @version 0.1.0 210601 created
  */
 abstract class Main
 {
@@ -46,6 +46,7 @@ abstract class Main
         $this->pageTmplt = new utils\Template("page.html");
         $this->pageTmplt->setData('lang', utils\Conf::get("DEF_LANG"));
         $this->pageTmplt->setData('base', utils\Conf::get("URL_BASE") . utils\Conf::get("URL_DIR"));
+        $this->pageTmplt->setData('version', utils\Conf::get("VER"));
         $this->pageTmplt->setData('user', $this->headerUserLoginLogoutLink());
     }
 

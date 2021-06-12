@@ -202,7 +202,7 @@ class AdmPlace extends Administration
         $query = (new db\Select())
             ->setSelect("*")
             ->setFrom("place")
-            ->setOrder('name');
+            ->setOrder('code');
         $queryResult = $query->run();
         if (is_array($queryResult)) {
             foreach ($queryResult as $record) {

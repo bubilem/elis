@@ -27,7 +27,7 @@ abstract class Dispatcher extends Main
         }
         $this->dspTmplt = new utils\Template("dsp/administration.html");
         new utils\Template("dsp/menu.html");
-        $menuItem = new utils\Template("dsp/menu-item.html");
+        $menuItem = new utils\Template("other/menu-item.html");
         $menuItems = "";
         foreach ([
             "dsp-dashboard" => "dashboard",
@@ -42,7 +42,7 @@ abstract class Dispatcher extends Main
             ]);
             $menuItems .= $menuItem;
         }
-        $this->dspTmplt->setData('menu', new utils\Template("dsp/menu.html", [
+        $this->dspTmplt->setData('menu', new utils\Template("other/menu.html", [
             'menu-items' => $menuItems
         ]));
     }

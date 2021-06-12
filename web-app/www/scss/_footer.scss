@@ -2,4 +2,17 @@ footer {
   font-size: 0.8em;
   padding: 1em 0;
   background-color: $darker-color;
+  div.content > div {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row;
+    nav {
+      margin: 0;
+      ul li:first-of-type {
+        margin-top: 0;
+      }
+    }
+  }
 }

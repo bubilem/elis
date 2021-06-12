@@ -2,14 +2,13 @@
 
 namespace elis\model;
 
-use elis\utils\Date;
 use elis\utils\db;
 
 /**
- * Package model class
- * @version 0.0.1 210128 created
+ * Package Log model class
+ * @version 0.1.2  created
  */
-class Package extends Main
+class PackageLog extends Main
 {
 
     public function __construct($pk = null)
@@ -28,7 +27,7 @@ class Package extends Main
     public function load($pk): bool
     {
         $result = (new db\Select())
-            ->setSelect("*")->setFrom('package')->setWhere('id = ' . intval($pk))
+            ->setSelect("*")->setFrom('package_log')->setWhere('id = ' . intval($pk))
             ->run();
         if (isset($result[0]) && is_array($result[0]) && !empty($result[0])) {
             $this->data = $result[0];
@@ -45,20 +44,18 @@ class Package extends Main
     public function save(): bool
     {
         $data = [
-            'code' => $this->getCode(),
-            'type' => $this->getType(),
-            'width' => $this->getWidth(),
-            'height' => $this->getHeight(),
-            'lenght' => $this->getLenght(),
-            'weight' => $this->getWeight(),
-            'description' => $this->getDescription()
+            'date' => $this->getDate(),
+            'package' => $this->getPackage(),
+            'state' => $this->getState(),
+            'event' => $this->getEvent()
+
         ];
         if ($this->getId()) {
-            if ((new db\Update('package', $data, $this->getId()))->run() !== false) {
+            if ((new db\Update('package_log', $data, $this->getId()))->run() !== false) {
                 return true;
             }
         } else {
-            if ($newId = (new db\Insert('package', $data))->run()) {
+            if ($newId = (new db\Insert('package_log', $data))->run()) {
                 $this->setId($newId);
                 return true;
             }
@@ -74,7 +71,7 @@ class Package extends Main
     public function delete(): bool
     {
         if ($this->getId()) {
-            if ((new db\Delete('package', $this->getId()))->run()) {
+            if ((new db\Delete('package_log', $this->getId()))->run()) {
                 $this->data = [];
                 return true;
             }
@@ -82,23 +79,8 @@ class Package extends Main
         return false;
     }
 
-    public function createLog(string $state, Event $event = null): PackageLog
-    {
-        if (!$this->getId()) {
-            return null;
-        }
-        $log = new PackageLog();
-        $log->setDate(Date::dbNow());
-        $log->setPackage($this->getId());
-        $log->setState($state);
-        if ($event != null && $event->getId()) {
-            $log->setEvent($event->getId());
-        }
-        return $log;
-    }
-
     public function __toString()
     {
-        return trim($this->getCode() . ' [' . $this->getType() . ']');
+        return trim($this->getCode() . ' [pck:' . $this->getPackage() . ',  sta:' . $this->getState() . ', dat:' . $this->getDate() . ']');
     }
 }

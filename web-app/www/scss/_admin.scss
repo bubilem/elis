@@ -8,6 +8,9 @@
       flex-wrap: wrap;
       > li {
         margin: 0.1em;
+        a {
+          white-space: nowrap;
+        }
       }
     }
   }

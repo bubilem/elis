@@ -1,0 +1,15 @@
+<h2>{caption}</h2>
+<form action="dsp-event/event/{eventType}/{route}" method="POST">
+  <div class="items">
+    <label for="">Place</label>
+    <div class="checkboxes">{places}</div>
+    <label for="place_manual">Place</label>
+    <input id="place_manual" type="text" name="place_manual" value="" maxlength="100" />
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5"></textarea>
+    <div>
+      <input type="hidden" name="route" value="{route}" />
+    </div>
+    <input class="btn" type="submit" value="Save" />
+  </div>
+</form>
