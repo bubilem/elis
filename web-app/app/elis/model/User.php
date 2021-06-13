@@ -3,11 +3,11 @@
 namespace elis\model;
 
 use elis\utils\db;
-use elis\utils\db\Query;
 use elis\utils\Secure;
 
 /**
  * User model class
+ * @version 0.1.3 210613 isInRole update
  * @version 0.0.1 201220 created
  */
 class User extends Main
@@ -110,12 +110,22 @@ class User extends Main
     /**
      * Checks if user is in role
      *
-     * @param string $role
+     * @param string|array $roles
      * @return bool true if user is in role
      */
-    public function isInRole(string $role): bool
+    public function isInRole($roles): bool
     {
-        return is_array($this->getRole()) && in_array($role, $this->getRole());
+        if (is_string($roles)) {
+            return is_array($this->getRole()) && in_array($roles, $this->getRole());
+        }
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if (is_array($this->getRole()) && in_array($role, $this->getRole())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

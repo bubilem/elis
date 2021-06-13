@@ -16,7 +16,7 @@ class DspRoute extends Dispatcher
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', 'Route Administration');
+        $this->pageTmplt->setData('title', 'Dispatcher :: Route Administration');
     }
 
     public function newForm($model = null)
@@ -219,7 +219,7 @@ class DspRoute extends Dispatcher
         }
     }
 
-    public function newUserForm($model = null)
+    public function newUserForm()
     {
         $route = new model\Route($this->getParam(2));
         $users = '';
@@ -246,6 +246,9 @@ class DspRoute extends Dispatcher
             $roles = '';
             $rolesTmplt = new utils\Template("dsp/route/user-form-option.html");
             foreach ((new model\CodeList("user-roles.json"))->getItems() as $role) {
+                if (in_array($role->getCode(), ['ADM', 'MNG'])) {
+                    continue;
+                }
                 $rolesTmplt->setAllData([
                     'value' => $role->getCode(),
                     'name' => $role->getName()

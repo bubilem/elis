@@ -16,7 +16,7 @@ class AdmVehicle extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', 'Vehicle Administration');
+        $this->pageTmplt->setData('title', 'Admin :: Vehicle Administration');
     }
 
     public function newForm($model = null)
@@ -168,9 +168,10 @@ class AdmVehicle extends Administration
         $tableRowTmplt = new utils\Template("adm/vehicle/table-row.html");
         $rows = '';
         $query = (new db\Select())
-            ->setSelect("*")
-            ->setFrom("vehicle")
-            ->setOrder('name');
+            ->setSelect("v.*, GROUP_CONCAT(CONCAT(r.name,' ',DATE_FORMAT(r.begin, '%Y-%m-%d')) ORDER BY r.begin DESC) route")
+            ->setFrom("vehicle v LEFT JOIN route r ON v.id = r.vehicle AND r.begin < NOW() AND r.end IS NULL")
+            ->setGroup("v.id")
+            ->setOrder('v.name');
         $queryResult = $query->run();
         if (is_array($queryResult)) {
             foreach ($queryResult as $record) {
@@ -178,6 +179,7 @@ class AdmVehicle extends Administration
                     'id' => $record['id'],
                     'name' => $record['name'],
                     'uid' => $record['uid'],
+                    'route' => $record['route'],
                     'mileage' => $record['mileage'],
                     'avg_consuption' => $record['avg_consuption']
                 ]);

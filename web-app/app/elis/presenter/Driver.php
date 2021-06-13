@@ -6,36 +6,33 @@ use elis\controller\Router;
 use elis\utils;
 
 /**
- * Main administration presenter
- * @version 0.0.1 201223 created
+ * Driver administration presenter
+ * @version 0.1.3 210613 created
  */
-abstract class Administration extends Main
+abstract class Driver extends Main
 {
 
     /**
-     * Administration template
+     * Driver template
      *
      * @var utils\Template
      */
-    protected $adminTmplt;
+    protected $drvTmplt;
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        if (!$this->user->isInRole('ADM')) {
+        if (!$this->user->isInRole(['DRV', 'CDR', 'ADM'])) {
             Router::redirect("error/401");
-            //Router::redirect("login");
         }
-        $this->adminTmplt = new utils\Template("page/administration.html");
-        new utils\Template("adm/menu.html");
+        $this->drvTmplt = new utils\Template("page/administration.html");
+        new utils\Template("drv/menu.html");
         $menuItem = new utils\Template("other/menu-item.html");
         $menuItems = "";
         foreach ([
             "" => "home",
-            "adm-dashboard" => "dashboard",
-            "adm-user" => "users",
-            "adm-vehicle" => "vehicles",
-            "adm-place" => "places"
+            "drv-dashboard" => "dashboard",
+            "drv-event" => "events"
         ] as $href => $label) {
             $menuItem->clearData()->setAllData([
                 'href' => $href,
@@ -44,7 +41,7 @@ abstract class Administration extends Main
             ]);
             $menuItems .= $menuItem;
         }
-        $this->adminTmplt->setData('menu', new utils\Template("other/menu.html", [
+        $this->drvTmplt->setData('menu', new utils\Template("other/menu.html", [
             'menu-items' => $menuItems
         ]));
     }
@@ -63,28 +60,16 @@ abstract class Administration extends Main
             if (method_exists($this, $methodName)) {
                 $this->$methodName();
             } else {
-                $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
+                $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                     'message' => 'Bad parameter',
                     'type' => 'err'
                 ]));
                 $this->table();
             }
         }
-        $this->pageTmplt->setData('main', $this->adminTmplt);
+        $this->pageTmplt->setData('main', $this->drvTmplt);
         echo $this->pageTmplt;
     }
-
-    protected abstract function newForm($model = null);
-
-    protected abstract function new();
-
-    protected abstract function editForm($model = null);
-
-    protected abstract function edit();
-
-    protected abstract function deleteQuestion();
-
-    protected abstract function delete();
 
     protected abstract function table();
 }

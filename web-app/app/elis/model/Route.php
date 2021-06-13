@@ -2,6 +2,7 @@
 
 namespace elis\model;
 
+use elis\utils\Arr;
 use elis\utils\db;
 
 /**
@@ -76,6 +77,28 @@ class Route extends Main
             }
         }
         return false;
+    }
+
+    /**
+     * Get routes
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getRoutes(User $user, array $roles): array
+    {
+        $query = (new db\Select())
+            ->setSelect("r.*, MAX(e.date) laststatedate")
+            ->addSelect("SUBSTRING_INDEX(GROUP_CONCAT(e.type ORDER BY e.date DESC),',',1) laststate")
+            ->setFrom("route r LEFT JOIN event e ON r.id = e.route")
+            ->setWhere("r.end is NULL")
+            ->setGroup("r.id")
+            ->setOrder("r.begin DESC");
+        if (!$user->isInRole('ADM')) {
+            $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.role IN(" . Arr::toStr($roles) . ")");
+        }
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
     }
 
     public function __toString()

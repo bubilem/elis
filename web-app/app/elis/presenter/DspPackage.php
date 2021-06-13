@@ -17,7 +17,7 @@ class DspPackage extends Dispatcher
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', 'Package Administration');
+        $this->pageTmplt->setData('title', 'Dispatcher :: Package Administration');
     }
 
     public function newForm($model = null)

@@ -3,37 +3,35 @@
 namespace elis\presenter;
 
 use elis\model;
-use elis\model\CodeList;
-use elis\model\CodeListItem;
 use elis\model\Event;
 use elis\utils;
 use elis\utils\db;
 
 /**
- * Event dispatcher administration presenter
- * @version 0.0.1 210610 created
+ * Event driver administration presenter
+ * @version 0.1.3 210613 created
  */
-class DspEvent extends Dispatcher
+class DrvEvent extends Driver
 {
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', 'Dispatcher :: Event Administration');
+        $this->pageTmplt->setData('title', 'Driver :: Event Administration');
     }
 
     public function lodForm()
     {
         $route = new model\Route($this->getParam(2));
         if (!$route->getId()) {
-            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+            $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Route does not exist.'
             ]));
             $this->table();
             return;
         }
-        $formTmplt =  new utils\Template("dsp/event/lod-form.html", [
+        $formTmplt =  new utils\Template("drv/event/lod-form.html", [
             'caption' => ' Route ' . $route . ' - Loading packages ',
             'route' => $route->getid()
         ]);
@@ -45,7 +43,7 @@ class DspEvent extends Dispatcher
             ->setGroup("p.id")
             ->run();
         if (empty($result)) {
-            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+            $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
                 'message' => 'Nothing to load, no waiting packages.'
             ]));
@@ -78,7 +76,7 @@ class DspEvent extends Dispatcher
             }
         }
         $formTmplt->setData('places', $options ? $options : 'Ups, no place.');
-        $this->dspTmplt->addData('content', (string)$formTmplt);
+        $this->drvTmplt->addData('content', (string)$formTmplt);
     }
 
     public function lod()
@@ -86,7 +84,7 @@ class DspEvent extends Dispatcher
         $messageTmplt = new utils\Template("other/message.html");
         $route = new model\Route(filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT));
         if (!$route->getId()) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Route does not exist.'
             ]));
@@ -95,7 +93,7 @@ class DspEvent extends Dispatcher
         }
         $pcks = filter_input(INPUT_POST, 'pck', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
         if (empty($pcks)) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Mo packages to load.'
             ]));
@@ -124,7 +122,7 @@ class DspEvent extends Dispatcher
             $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
             $messageTmplt->setData('type', 'err');
         }
-        $this->dspTmplt->addData('content', $messageTmplt);
+        $this->drvTmplt->addData('content', $messageTmplt);
         $this->table();
     }
 
@@ -132,14 +130,14 @@ class DspEvent extends Dispatcher
     {
         $route = new model\Route($this->getParam(2));
         if (!$route->getId()) {
-            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+            $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'err',
                 'message' => 'Route does not exist.'
             ]));
             $this->table();
             return;
         }
-        $formTmplt =  new utils\Template("dsp/event/unl-form.html", [
+        $formTmplt =  new utils\Template("drv/event/unl-form.html", [
             'caption' => ' Route ' . $route . ' - Unloading packages ',
             'route' => $route->getid()
         ]);
@@ -152,7 +150,7 @@ class DspEvent extends Dispatcher
             ->setHaving("laststate NOT IN('WTG','ACP','DST','FRW')")
             ->run();
         if (empty($result)) {
-            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+            $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
                 'message' => 'Nothing to load, no waiting packages.'
             ]));
@@ -185,7 +183,7 @@ class DspEvent extends Dispatcher
             }
         }
         $formTmplt->setData('places', $options ? $options : 'Ups, no place.');
-        $this->dspTmplt->addData('content', (string)$formTmplt);
+        $this->drvTmplt->addData('content', (string)$formTmplt);
     }
 
     public function unl()
@@ -193,7 +191,7 @@ class DspEvent extends Dispatcher
         $messageTmplt = new utils\Template("other/message.html");
         $route = new model\Route(filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT));
         if (!$route->getId()) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Route does not exist.'
             ]));
@@ -202,7 +200,7 @@ class DspEvent extends Dispatcher
         }
         $pcks = filter_input(INPUT_POST, 'pck', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
         if (empty($pcks)) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'No packages to unload.'
             ]));
@@ -231,7 +229,7 @@ class DspEvent extends Dispatcher
             $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
             $messageTmplt->setData('type', 'err');
         }
-        $this->dspTmplt->addData('content', $messageTmplt);
+        $this->drvTmplt->addData('content', $messageTmplt);
         $this->table();
     }
 
@@ -239,9 +237,9 @@ class DspEvent extends Dispatcher
     {
         $messageTmplt = new utils\Template("other/message.html");
         $eventType = strtoupper($this->getParam(2));
-        $eventTypes = new CodeList('event-types.json');
-        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+        $eventTypes = new model\CodeList('event-types.json');
+        if (!($eventTypes->getItem($eventType) instanceof model\CodeListItem)) {
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Event type does not exist.'
             ]));
@@ -250,7 +248,7 @@ class DspEvent extends Dispatcher
         }
         $route = new model\Route($this->getParam(3));
         if (!$route->getId()) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Route does not exist.'
             ]));
@@ -275,17 +273,17 @@ class DspEvent extends Dispatcher
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
                     $messageTmplt->setData('type', 'err');
                 }
-                $this->dspTmplt->addData('content', $messageTmplt);
+                $this->drvTmplt->addData('content', $messageTmplt);
                 $this->table();
                 return;
             } else {
-                $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+                $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                     'type' => 'war',
                     'message' => 'No no no.'
                 ]));
             }
         }
-        $formTmplt =  new utils\Template("dsp/event/form.html", [
+        $formTmplt =  new utils\Template("drv/event/form.html", [
             'caption' => ' Route ' . $route . ' - ' . $eventType . ' - ' . ucfirst($eventTypes->getItem($eventType)->getName()),
             'eventType' =>  strtolower($eventType),
             'route' => $route->getId()
@@ -305,7 +303,7 @@ class DspEvent extends Dispatcher
             }
         }
         $formTmplt->setData('places', $options ? $options : 'Ups, no place.');
-        $this->dspTmplt->addData('content', (string)$formTmplt);
+        $this->drvTmplt->addData('content', (string)$formTmplt);
     }
 
     public function log()
@@ -317,10 +315,10 @@ class DspEvent extends Dispatcher
                 'message' => "Route does not exist.",
                 'type' => 'err'
             ]);
-            $this->dspTmplt->setData('content', $messageTmplt);
+            $this->drvTmplt->setData('content', $messageTmplt);
             $this->table();
         }
-        $tableRowTmplt = new utils\Template("dsp/event/event-table-row.html");
+        $tableRowTmplt = new utils\Template("drv/event/event-table-row.html");
         $rows = '';
         $query = (new db\Select())
             ->setSelect("e.*, CONCAT_WS(' ',u.name, u.surname) username")
@@ -343,52 +341,45 @@ class DspEvent extends Dispatcher
                 $rows .= $tableRowTmplt;
             }
         }
-        $this->dspTmplt->addData('content', new utils\Template("dsp/event/event-table.html", [
+        $this->drvTmplt->addData('content', new utils\Template("drv/event/event-table.html", [
             'caption' => "Route $route log",
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));
         }
     }
 
+    /**
+     * Table of routes
+     *
+     * @return void
+     */
     protected function table()
     {
-        $tableRowTmplt = new utils\Template("dsp/event/route-table-row.html");
+        $tableRowTmplt = new utils\Template("drv/event/route-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("r.*, SUBSTRING_INDEX(GROUP_CONCAT(e.type ORDER BY e.date DESC),',',1) laststate, MAX(e.date) laststatedate")
-            ->setFrom("route r LEFT JOIN event e ON r.id = e.route")
-            ->setWhere("r.end is NULL")
-            ->setGroup("r.id")
-            ->setOrder("r.begin DESC");
-        if (!$this->user->isInRole('ADM')) {
-            $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.role = 'DSP'");
+        foreach (model\Route::getRoutes($this->user, ['DRV', 'CDR']) as $record) {
+            $vehicle = new model\Vehicle($record['vehicle']);
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'state' => $record['laststate'],
+                'date' => $record['laststatedate'],
+                'mileage' => $record['mileage'],
+                'vehicle' => $vehicle
+            ]);
+            $rows .= $tableRowTmplt;
         }
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $vehicle = (new db\Select())->setSelect("name")->setFrom("vehicle")->setWhere("id = " . $record['vehicle'])->run();
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'state' => $record['laststate'],
-                    'date' => $record['laststatedate'],
-                    'mileage' => $record['mileage'],
-                    'vehicle' => empty($vehicle[0]['name']) ? '' : $vehicle[0]['name']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
-        }
-        $this->dspTmplt->addData('content', new utils\Template("dsp/event/route-table.html", [
+        $this->drvTmplt->addData('content', new utils\Template("drv/event/route-table.html", [
             'caption' => 'Route List',
             'rows' => $rows
         ]));
         if (empty($rows)) {
-            $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
+            $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'std',
                 'message' => 'There is no record in the database'
             ]));

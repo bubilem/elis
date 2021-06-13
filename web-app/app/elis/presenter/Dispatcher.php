@@ -22,14 +22,15 @@ abstract class Dispatcher extends Main
     public function __construct(array $params)
     {
         parent::__construct($params);
-        if (!$this->user->isInRole('ADM') && !$this->user->isInRole('DSP')) {
+        if (!$this->user->isInRole(['ADM', 'DSP'])) {
             Router::redirect("error/401");
         }
-        $this->dspTmplt = new utils\Template("dsp/administration.html");
+        $this->dspTmplt = new utils\Template("page/administration.html");
         new utils\Template("dsp/menu.html");
         $menuItem = new utils\Template("other/menu-item.html");
         $menuItems = "";
         foreach ([
+            "" => "home",
             "dsp-dashboard" => "dashboard",
             "dsp-route" => "routes",
             "dsp-package" => "packages",

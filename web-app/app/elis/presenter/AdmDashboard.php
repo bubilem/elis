@@ -5,7 +5,7 @@ namespace elis\presenter;
 use elis\utils;
 
 /**
- * Dashboard presenter
+ * Administration dashboard presenter
  * @version 0.0.1 201223 created
  */
 class AdmDashboard extends Administration
@@ -14,7 +14,7 @@ class AdmDashboard extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', "Administration Dashboard");
+        $this->pageTmplt->setData('title', "Admin :: Dashboard");
         $this->adminTmplt->setData('content', "Hello in ELIS administration.");
     }
 

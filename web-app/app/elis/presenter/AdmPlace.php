@@ -16,7 +16,7 @@ class AdmPlace extends Administration
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->pageTmplt->setData('title', 'Place Administration');
+        $this->pageTmplt->setData('title', 'Admin :: Place Administration');
     }
 
     public function newForm($model = null)
@@ -200,7 +200,7 @@ class AdmPlace extends Administration
         $tableRowTmplt = new utils\Template("adm/place/table-row.html");
         $rows = '';
         $query = (new db\Select())
-            ->setSelect("*")
+            ->setSelect("*, CONCAT_WS(', ', IF(street!='',street,NULL), IF(city_code!='',city_code,NULL), city_name, country_code) address")
             ->setFrom("place")
             ->setOrder('code');
         $queryResult = $query->run();
@@ -210,7 +210,7 @@ class AdmPlace extends Administration
                     'id' => $record['id'],
                     'name' => $record['name'],
                     'code' => $record['code'],
-                    'address' => implode(', ', [$record['street'], $record['city_name'], $record['country_code']]),
+                    'address' => $record['address'],
                     'gps' => $record['gps']
                 ]);
                 $rows .= $tableRowTmplt;
