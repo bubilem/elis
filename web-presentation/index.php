@@ -1,5 +1,5 @@
 <?php
-$ver = 210518;
+$ver = 210613;
 $pages = json_decode(file_get_contents("pages/register.json"), true);
 $articles = json_decode(file_get_contents("blog/register.json"), true);
 $page = strtolower(filter_input(INPUT_GET, "p"));
@@ -33,7 +33,7 @@ if ($article) {
 
     <meta property="og:site_name" content="The Journey is The Destination">
     <meta property="og:type" content="<?php echo $article ? 'article' : 'website'; ?>">
-    
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="3IT, VOŠ, SPŠ a SOŠ Varnsdorf" />
