@@ -363,14 +363,13 @@ class DrvEvent extends Driver
         $tableRowTmplt = new utils\Template("drv/event/route-table-row.html");
         $rows = '';
         foreach (model\Route::getRoutes($this->user, ['DRV', 'CDR']) as $record) {
-            $vehicle = new model\Vehicle($record['vehicle']);
             $tableRowTmplt->clearData()->setAllData([
                 'id' => $record['id'],
                 'name' => $record['name'],
                 'state' => $record['laststate'],
                 'date' => $record['laststatedate'],
                 'mileage' => $record['mileage'],
-                'vehicle' => $vehicle
+                'vehicle' => (string) new model\Vehicle($record['vehicle'])
             ]);
             $rows .= $tableRowTmplt;
         }
