@@ -7,6 +7,7 @@ use elis\utils\Secure;
 
 /**
  * User model class
+ * @version 0.1.4 210614 getUsers
  * @version 0.1.3 210613 isInRole update
  * @version 0.0.1 201220 created
  */
@@ -108,6 +109,24 @@ class User extends Main
     }
 
     /**
+     * Checks if is user last admin
+     *
+     * @return bool
+     */
+    public function isLastAdmin(): bool
+    {
+        $admins = (new db\Select())
+            ->setSelect('user')
+            ->setFrom('user_has_role')
+            ->setWhere("role = 'ADM'")
+            ->run();
+        if (is_array($admins) && count($admins) == 1 && $admins[0]['user'] == $this->getId()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if user is in role
      *
      * @param string|array $roles
@@ -186,6 +205,22 @@ class User extends Main
     public function empty()
     {
         return $this->getId() ? false : true;
+    }
+
+    /**
+     * Get users
+     *
+     * @return array
+     */
+    public static function getUsers(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("u.*, GROUP_CONCAT(r.role SEPARATOR ' ') roles")
+            ->setFrom("user u LEFT JOIN user_has_role r ON u.id = r.user")
+            ->setGroup("u.id")
+            ->setOrder('u.surname, u.name');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
     }
 
     public function __toString()

@@ -8,6 +8,7 @@ use elis\utils\db;
 
 /**
  * User administration presenter
+ * @version 0.1.4 210614 last error mess, getUsers, delete last admin...
  * @version 0.0.1 201223 created
  */
 class AdmUser extends Administration
@@ -72,7 +73,7 @@ class AdmUser extends Administration
                 $messageTmplt->setData('message', 'User ' . $user . ' has been created.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'User ' . $user . ' has not been created.');
+                $messageTmplt->setData('message', 'User ' . $user . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->adminTmplt->addData('content', $messageTmplt);
@@ -171,19 +172,31 @@ class AdmUser extends Administration
     protected function deleteQuestion()
     {
         $user = new model\User($this->getParam(2));
-        if ($user->getId()) {
+        if (!$user->getId()) {
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
+                'type' => 'err',
+                'message' => 'User to delete does not exist.'
+            ]));
+        } else if ($user->isLastAdmin()) {
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
+                'type' => 'war',
+                'message' => 'Can not delete last admin.'
+            ]));
+        } else if ($user->getId() == $this->user->getId()) {
+            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
+                'type' => 'war',
+                'message' => 'Can not delete myself.'
+            ]));
+        } else {
             $deleteQuestionTmplt = new utils\Template("adm/user/delete-yes-no.html", [
                 'id' => $user->getId(),
                 'user' => (string)$user
             ]);
             $this->adminTmplt->addData('content', $deleteQuestionTmplt);
-        } else {
-            $this->adminTmplt->addData('content', new utils\Template("other/message.html", [
-                'type' => 'err',
-                'message' => 'User to delete does not exist.'
-            ]));
-            $this->table();
+            return;
         }
+
+        $this->table();
     }
 
     protected function delete()
@@ -197,7 +210,7 @@ class AdmUser extends Administration
             ]);
             if (!$user->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "User $user has not been deleted.",
+                    'message' => "User $user has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -215,24 +228,16 @@ class AdmUser extends Administration
     {
         $tableRowTmplt = new utils\Template("adm/user/table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("u.*, GROUP_CONCAT(r.role SEPARATOR ' ') roles")
-            ->setFrom("user u LEFT JOIN user_has_role r ON u.id = r.user")
-            ->setGroup("u.id")
-            ->setOrder('u.surname, u.name');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'surname' => $record['surname'],
-                    'email' => $record['email'],
-                    'password' => (empty($record['password']) ? '&#10005;' : '&#10004;'),
-                    'roles' => $record['roles']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach (model\User::getUsers() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'surname' => $record['surname'],
+                'email' => $record['email'],
+                'password' => (empty($record['password']) ? '&#10005;' : '&#10004;'),
+                'roles' => $record['roles']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->adminTmplt->addData('content', new utils\Template("adm/user/table.html", [
             'caption' => 'User List',

@@ -6,6 +6,7 @@ use elis\utils\db;
 
 /**
  * Vehicle model class
+ * @version 0.1.4 210614 getVehicles
  * @version 0.0.1 210102 created
  */
 class Vehicle extends Main
@@ -76,6 +77,22 @@ class Vehicle extends Main
             }
         }
         return false;
+    }
+
+    /**
+     * Get vehicles
+     *
+     * @return array
+     */
+    public static function getVehicles(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("v.*, GROUP_CONCAT(CONCAT(r.name,' ',DATE_FORMAT(r.begin, '%Y-%m-%d')) ORDER BY r.begin DESC) route")
+            ->setFrom("vehicle v LEFT JOIN route r ON v.id = r.vehicle AND r.begin < NOW() AND r.end IS NULL")
+            ->setGroup("v.id")
+            ->setOrder('v.name');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
     }
 
     public function __toString()

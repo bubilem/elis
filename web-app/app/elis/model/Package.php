@@ -7,6 +7,7 @@ use elis\utils\db;
 
 /**
  * Package model class
+ * @version 0.1.4 210614 getPackages, getLog
  * @version 0.0.1 210128 created
  */
 class Package extends Main
@@ -82,6 +83,13 @@ class Package extends Main
         return false;
     }
 
+    /**
+     * Create new log
+     *
+     * @param string $state
+     * @param Event $event
+     * @return PackageLog
+     */
     public function createLog(string $state, Event $event = null): PackageLog
     {
         if (!$this->getId()) {
@@ -95,6 +103,33 @@ class Package extends Main
             $log->setEvent($event->getId());
         }
         return $log;
+    }
+
+    /**
+     * Get Log
+     *
+     * @return array
+     */
+    public function getLog(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("l.*, e.type eventtype")
+            ->setFrom("package_log l LEFT JOIN event e ON l.event = e.id")
+            ->setWhere("l.package = " . $this->getId())
+            ->setOrder('l.date DESC');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
+    }
+
+    public static function getPackages(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("p.*, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
+            ->setFrom("package p JOIN package_log l ON p.id = l.package")
+            ->setGroup('p.id')
+            ->setOrder('p.id DESC');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
     }
 
     public function __toString()

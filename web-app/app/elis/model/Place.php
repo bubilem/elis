@@ -6,6 +6,7 @@ use elis\utils\db;
 
 /**
  * Place model class
+ * @version 0.1.4 210614 getPlaces
  * @version 0.0.1 210125 created
  */
 class Place extends Main
@@ -79,6 +80,22 @@ class Place extends Main
             }
         }
         return false;
+    }
+
+    /**
+     * Get places
+     *
+     * @return array
+     */
+    public static function getPlaces(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("*, CONCAT_WS(', ', IF(street!='',street,NULL)")
+            ->addSelect("IF(city_code!='',city_code,NULL), city_name, country_code) address")
+            ->setFrom("place")
+            ->setOrder('code');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
     }
 
     public function __toString()

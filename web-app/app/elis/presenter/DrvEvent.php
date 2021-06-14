@@ -9,6 +9,7 @@ use elis\utils\db;
 
 /**
  * Event driver administration presenter
+ * @version 0.1.4 210614 last error mess, getLog
  * @version 0.1.3 210613 created
  */
 class DrvEvent extends Driver
@@ -270,7 +271,7 @@ class DrvEvent extends Driver
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has been created.');
                     $messageTmplt->setData('type', 'suc');
                 } else {
-                    $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
+                    $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
                     $messageTmplt->setData('type', 'err');
                 }
                 $this->drvTmplt->addData('content', $messageTmplt);
@@ -320,26 +321,16 @@ class DrvEvent extends Driver
         }
         $tableRowTmplt = new utils\Template("drv/event/event-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("e.*, CONCAT_WS(' ',u.name, u.surname) username")
-            ->addSelect("CONCAT_WS(', ', IF(p.code IS NOT NULL, CONCAT(p.code,' (',CONCAT_WS(', ',p.city_name,p.country_code),')'),'OTH'), e.place_manual) placename")
-            ->setFrom("event e LEFT JOIN user u ON e.recorded = u.id")
-            ->addFrom("LEFT JOIN place p ON e.place = p.id")
-            ->setWhere("e.route = " . $route->getId())
-            ->setOrder('e.date DESC');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'date' => $record['date'],
-                    'type' => $record['type'],
-                    'user' => $record['username'],
-                    'place' => $record['placename'],
-                    'description' => $record['description']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach ($route->getLog() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'date' => $record['date'],
+                'type' => $record['type'],
+                'user' => $record['username'],
+                'place' => $record['placename'],
+                'description' => $record['description']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->drvTmplt->addData('content', new utils\Template("drv/event/event-table.html", [
             'caption' => "Route $route log",

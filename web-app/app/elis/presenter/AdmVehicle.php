@@ -8,6 +8,7 @@ use elis\utils\db;
 
 /**
  * Vehicle administration presenter
+ * @version 0.1.4 210614 last error mess, getVehicles
  * @version 0.0.1 210102 created
  */
 class AdmVehicle extends Administration
@@ -49,7 +50,7 @@ class AdmVehicle extends Administration
                 $messageTmplt->setData('message', 'Vehicle ' . $model . ' has been created.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'Vehicle ' . $model . ' has not been created.');
+                $messageTmplt->setData('message', 'Vehicle ' . $model . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->adminTmplt->addData('content', $messageTmplt);
@@ -149,7 +150,7 @@ class AdmVehicle extends Administration
             ]);
             if (!$model->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "Vehicle $model has not been deleted.",
+                    'message' => "Vehicle $model has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -167,24 +168,16 @@ class AdmVehicle extends Administration
     {
         $tableRowTmplt = new utils\Template("adm/vehicle/table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("v.*, GROUP_CONCAT(CONCAT(r.name,' ',DATE_FORMAT(r.begin, '%Y-%m-%d')) ORDER BY r.begin DESC) route")
-            ->setFrom("vehicle v LEFT JOIN route r ON v.id = r.vehicle AND r.begin < NOW() AND r.end IS NULL")
-            ->setGroup("v.id")
-            ->setOrder('v.name');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'uid' => $record['uid'],
-                    'route' => $record['route'],
-                    'mileage' => $record['mileage'],
-                    'avg_consuption' => $record['avg_consuption']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach (model\Vehicle::getVehicles() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'uid' => $record['uid'],
+                'route' => $record['route'],
+                'mileage' => $record['mileage'],
+                'avg_consuption' => $record['avg_consuption']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->adminTmplt->addData('content', new utils\Template("adm/vehicle/table.html", [
             'caption' => 'Vehicle List',

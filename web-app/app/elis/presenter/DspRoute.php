@@ -8,6 +8,7 @@ use elis\utils\db;
 
 /**
  * Route dispatcher administration presenter
+ * @version 0.1.4 210614 last error mess
  * @version 0.0.1 210112 created
  */
 class DspRoute extends Dispatcher
@@ -59,7 +60,7 @@ class DspRoute extends Dispatcher
                 $messageTmplt->setData('message', 'Route ' . $model . ' has been created.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'Route ' . $model . ' has not been created.');
+                $messageTmplt->setData('message', 'Route ' . $model . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->dspTmplt->addData('content', $messageTmplt);
@@ -169,7 +170,7 @@ class DspRoute extends Dispatcher
             ]);
             if (!$model->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "Route $model has not been deleted.",
+                    'message' => "Route $model has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -288,7 +289,7 @@ class DspRoute extends Dispatcher
                 $messageTmplt->setData('message', 'User ' . $model->getUser() . ' has been added to route.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'User ' . $model->getUser() . ' has not been added to route.');
+                $messageTmplt->setData('message', 'User ' . $model->getUser() . ' has not been added to route.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->dspTmplt->addData('content', $messageTmplt);
@@ -351,25 +352,17 @@ class DspRoute extends Dispatcher
         $route = new model\Route($this->getParam(2));
         $tableRowTmplt = new utils\Template("dsp/route/user-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("rhu.*, u.id, u.name, u.surname, u.email")
-            ->setFrom("route_has_user rhu JOIN user u ON rhu.user = u.id")
-            ->setWhere("rhu.route = " . $route->getId())
-            ->setOrder("assigned");
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'name' => $record['name'],
-                    'surname' => $record['surname'],
-                    'email' => $record['email'],
-                    'role' => $record['role'],
-                    'assigned' => $record['assigned'],
-                    'route' => $route->getId(),
-                    'user' => $record['id']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach ($route->getUsersInRoute() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'name' => $record['name'],
+                'surname' => $record['surname'],
+                'email' => $record['email'],
+                'role' => $record['role'],
+                'assigned' => $record['assigned'],
+                'route' => $route->getId(),
+                'user' => $record['id']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/route/user-table.html", [
             'caption' => 'Route ' . $route->getName() . ' has users',

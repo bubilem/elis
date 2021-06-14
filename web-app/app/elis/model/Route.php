@@ -7,6 +7,7 @@ use elis\utils\db;
 
 /**
  * Route model class
+ * @version 0.1.4 210614 getUsersInRoute, getLog
  * @version 0.0.1 210125 created
  */
 class Route extends Main
@@ -97,6 +98,41 @@ class Route extends Main
         if (!$user->isInRole('ADM')) {
             $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.role IN(" . Arr::toStr($roles) . ")");
         }
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
+    }
+
+    /**
+     * Get users in route
+     *
+     * @return array
+     */
+    public function getUsersInRoute(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("rhu.*, u.id, u.name, u.surname, u.email")
+            ->setFrom("route_has_user rhu JOIN user u ON rhu.user = u.id")
+            ->setWhere("rhu.route = " . $this->getId())
+            ->setOrder("assigned");
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
+    }
+
+    /**
+     * Get Log
+     *
+     * @return array
+     */
+    public function getLog(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("e.*, CONCAT_WS(' ',u.name, u.surname) username")
+            ->addSelect("CONCAT_WS(', ', IF(p.code IS NOT NULL, CONCAT(p.code,' (',CONCAT_WS(', ',p.city_name,p.country_code),')'),'OTH'), e.place_manual) placename")
+            ->setFrom("event e LEFT JOIN user u ON e.recorded = u.id")
+            ->addFrom("LEFT JOIN place p ON e.place = p.id")
+            ->setWhere("e.route = " . $this->getId())
+            ->setOrder('e.date DESC');
+
         $queryResult = $query->run();
         return is_array($queryResult) ? $queryResult : [];
     }

@@ -11,6 +11,7 @@ use elis\utils\db;
 
 /**
  * Event dispatcher administration presenter
+ * @version 0.1.4 210614 last error mess, getLog, getRoutes
  * @version 0.0.1 210610 created
  */
 class DspEvent extends Dispatcher
@@ -228,7 +229,7 @@ class DspEvent extends Dispatcher
                 }
             }
         } else {
-            $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
+            $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
             $messageTmplt->setData('type', 'err');
         }
         $this->dspTmplt->addData('content', $messageTmplt);
@@ -272,7 +273,7 @@ class DspEvent extends Dispatcher
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has been created.');
                     $messageTmplt->setData('type', 'suc');
                 } else {
-                    $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
+                    $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
                     $messageTmplt->setData('type', 'err');
                 }
                 $this->dspTmplt->addData('content', $messageTmplt);
@@ -322,26 +323,16 @@ class DspEvent extends Dispatcher
         }
         $tableRowTmplt = new utils\Template("dsp/event/event-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("e.*, CONCAT_WS(' ',u.name, u.surname) username")
-            ->addSelect("CONCAT_WS(', ', IF(p.code IS NOT NULL, CONCAT(p.code,' (',CONCAT_WS(', ',p.city_name,p.country_code),')'),'OTH'), e.place_manual) placename")
-            ->setFrom("event e LEFT JOIN user u ON e.recorded = u.id")
-            ->addFrom("LEFT JOIN place p ON e.place = p.id")
-            ->setWhere("e.route = " . $route->getId())
-            ->setOrder('e.date DESC');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'date' => $record['date'],
-                    'type' => $record['type'],
-                    'user' => $record['username'],
-                    'place' => $record['placename'],
-                    'description' => $record['description']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach ($route->getLog() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'date' => $record['date'],
+                'type' => $record['type'],
+                'user' => $record['username'],
+                'place' => $record['placename'],
+                'description' => $record['description']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/event/event-table.html", [
             'caption' => "Route $route log",
@@ -359,29 +350,17 @@ class DspEvent extends Dispatcher
     {
         $tableRowTmplt = new utils\Template("dsp/event/route-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("r.*, SUBSTRING_INDEX(GROUP_CONCAT(e.type ORDER BY e.date DESC),',',1) laststate, MAX(e.date) laststatedate")
-            ->setFrom("route r LEFT JOIN event e ON r.id = e.route")
-            ->setWhere("r.end is NULL")
-            ->setGroup("r.id")
-            ->setOrder("r.begin DESC");
-        if (!$this->user->isInRole('ADM')) {
-            $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.role = 'DSP'");
-        }
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $vehicle = (new db\Select())->setSelect("name")->setFrom("vehicle")->setWhere("id = " . $record['vehicle'])->run();
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'state' => $record['laststate'],
-                    'date' => $record['laststatedate'],
-                    'mileage' => $record['mileage'],
-                    'vehicle' => empty($vehicle[0]['name']) ? '' : $vehicle[0]['name']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach (model\Route::getRoutes($this->user, ['DSP']) as $record) {
+            $vehicle = (new db\Select())->setSelect("name")->setFrom("vehicle")->setWhere("id = " . $record['vehicle'])->run();
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'state' => $record['laststate'],
+                'date' => $record['laststatedate'],
+                'mileage' => $record['mileage'],
+                'vehicle' => empty($vehicle[0]['name']) ? '' : $vehicle[0]['name']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/event/route-table.html", [
             'caption' => 'Route List',

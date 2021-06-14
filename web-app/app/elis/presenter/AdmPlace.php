@@ -8,6 +8,7 @@ use elis\utils\db;
 
 /**
  * Place administration presenter
+ * @version 0.1.4 210614 last error mess, getPlaces
  * @version 0.0.1 210112 created
  */
 class AdmPlace extends Administration
@@ -65,7 +66,7 @@ class AdmPlace extends Administration
                 $messageTmplt->setData('message', 'Place ' . $model . ' has been created.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'Place ' . $model . ' has not been created.');
+                $messageTmplt->setData('message', 'Place ' . $model . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->adminTmplt->addData('content', $messageTmplt);
@@ -181,7 +182,7 @@ class AdmPlace extends Administration
             ]);
             if (!$model->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "Place $model has not been deleted.",
+                    'message' => "Place $model has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -199,22 +200,15 @@ class AdmPlace extends Administration
     {
         $tableRowTmplt = new utils\Template("adm/place/table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("*, CONCAT_WS(', ', IF(street!='',street,NULL), IF(city_code!='',city_code,NULL), city_name, country_code) address")
-            ->setFrom("place")
-            ->setOrder('code');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'code' => $record['code'],
-                    'address' => $record['address'],
-                    'gps' => $record['gps']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach (model\Place::getPlaces() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'code' => $record['code'],
+                'address' => $record['address'],
+                'gps' => $record['gps']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->adminTmplt->addData('content', new utils\Template("adm/place/table.html", [
             'caption' => 'Place List',

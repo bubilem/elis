@@ -9,6 +9,7 @@ use elis\utils\Template;
 
 /**
  * Package dispatcher administration presenter
+ * @version 0.1.4 210614 last error mess, getLog, getPackages
  * @version 0.0.1 210610 created
  */
 class DspPackage extends Dispatcher
@@ -100,7 +101,7 @@ class DspPackage extends Dispatcher
                 $messageTmplt->setData('type', 'suc');
                 $model->createLog("ACP")->save();
             } else {
-                $messageTmplt->setData('message', 'Package ' . $model . ' has not been created.');
+                $messageTmplt->setData('message', 'Package ' . $model . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->dspTmplt->addData('content', $messageTmplt);
@@ -206,7 +207,7 @@ class DspPackage extends Dispatcher
             ]);
             if (!$model->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "Package $model has not been deleted.",
+                    'message' => "Package $model has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -234,7 +235,7 @@ class DspPackage extends Dispatcher
                 ]);
             } else {
                 $messageTmplt->setAllData([
-                    'message' => "State of package $model has not been setted to WTG.",
+                    'message' => "State of package $model has not been setted to WTG." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -250,8 +251,8 @@ class DspPackage extends Dispatcher
 
     public function log()
     {
-        $model = new model\Package($this->getParam(2));
-        if (!$model->getId()) {
+        $package = new model\Package($this->getParam(2));
+        if (!$package->getId()) {
             $messageTmplt = new utils\Template("other/message.html");
             $messageTmplt->setAllData([
                 'message' => "Package does not exist.",
@@ -262,26 +263,18 @@ class DspPackage extends Dispatcher
         }
         $tableRowTmplt = new utils\Template("dsp/package/log-table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("l.*, e.type eventtype")
-            ->setFrom("package_log l LEFT JOIN event e ON l.event = e.id")
-            ->setWhere("l.package = " . $model->getId())
-            ->setOrder('l.date DESC');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'date' => $record['date'],
-                    'package' => $record['package'],
-                    'state' => $record['state'],
-                    'event' => $record['eventtype']
-                ]);
-                $rows .= $tableRowTmplt;
-            }
+        foreach ($package->getLog() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'date' => $record['date'],
+                'package' => $record['package'],
+                'state' => $record['state'],
+                'event' => $record['eventtype']
+            ]);
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/package/log-table.html", [
-            'caption' => "Package $model log",
+            'caption' => "Package $package log",
             'rows' => $rows
         ]));
         if (empty($rows)) {
@@ -296,32 +289,24 @@ class DspPackage extends Dispatcher
     {
         $tableRowTmplt = new utils\Template("dsp/package/table-row.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("p.*, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package")
-            ->setGroup('p.id')
-            ->setOrder('p.id DESC');
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            $btnLink = new Template("other/link-btn.html", ['caption' => 'WTG']);
-            foreach ($queryResult as $record) {
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'code' => $record['code'],
-                    'type' => $record['type'],
-                    'state' => $record['laststate'],
-                    'dimension' => implode(' x ', [$record['width'], $record['height'], $record['lenght']]),
-                    'weight' => $record['weight'],
-                    'description' => $record['description']
-                ]);
-                if ($record['laststate'] == 'ACP') {
-                    $btnLink->setData('href', 'dsp-package/to-wtg/' . $record['id']);
-                    $tableRowTmplt->setData('wtg', $btnLink);
-                } else {
-                    $tableRowTmplt->setData('wtg', '');
-                }
-                $rows .= $tableRowTmplt;
+        $btnLink = new Template("other/link-btn.html", ['caption' => 'WTG']);
+        foreach (model\Package::getPackages() as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'code' => $record['code'],
+                'type' => $record['type'],
+                'state' => $record['laststate'],
+                'dimension' => implode(' x ', [$record['width'], $record['height'], $record['lenght']]),
+                'weight' => $record['weight'],
+                'description' => $record['description']
+            ]);
+            if ($record['laststate'] == 'ACP') {
+                $btnLink->setData('href', 'dsp-package/to-wtg/' . $record['id']);
+                $tableRowTmplt->setData('wtg', $btnLink);
+            } else {
+                $tableRowTmplt->setData('wtg', '');
             }
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/package/table.html", [
             'caption' => 'Package List',

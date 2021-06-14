@@ -126,7 +126,6 @@ class MySQL implements Driver
         return self::$lastError;
     }
 
-
     /**
      * Returns last insert id
      *

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1:3306
--- Vytvořeno: Ned 13. čen 2021, 15:29
+-- Vytvořeno: Pon 14. čen 2021, 21:43
 -- Verze serveru: 5.7.26
 -- Verze PHP: 7.3.5
 
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS `route` (
   `end` datetime DEFAULT NULL,
   `mileage` mediumint(9) DEFAULT NULL,
   `description` text,
-  `vehicle` mediumint(8) UNSIGNED NOT NULL,
+  `vehicle` mediumint(8) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_route_vehicle1_idx` (`vehicle`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `surname` varchar(65) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Vypisuji data pro tabulku `user`
@@ -310,27 +310,27 @@ ALTER TABLE `event`
 -- Omezení pro tabulku `package_log`
 --
 ALTER TABLE `package_log`
-  ADD CONSTRAINT `fk_package_log_event1` FOREIGN KEY (`event`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_package_log_event1` FOREIGN KEY (`event`) REFERENCES `event` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `fk_package_log_package1` FOREIGN KEY (`package`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Omezení pro tabulku `route`
 --
 ALTER TABLE `route`
-  ADD CONSTRAINT `fk_route_vehicle1` FOREIGN KEY (`vehicle`) REFERENCES `vehicle` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_route_vehicle1` FOREIGN KEY (`vehicle`) REFERENCES `vehicle` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Omezení pro tabulku `route_has_user`
 --
 ALTER TABLE `route_has_user`
-  ADD CONSTRAINT `fk_route_has_user_route1` FOREIGN KEY (`route`) REFERENCES `route` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_route_has_user_user1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_route_has_user_route1` FOREIGN KEY (`route`) REFERENCES `route` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_route_has_user_user1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Omezení pro tabulku `user_has_role`
 --
 ALTER TABLE `user_has_role`
-  ADD CONSTRAINT `fk_user_has_role_user` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_user_has_role_user` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
