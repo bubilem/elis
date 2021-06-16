@@ -4,6 +4,7 @@ namespace elis\utils;
 
 /**
  * Array utility
+ * @version 0.1.5 210616 bug in toStr
  * @version 0.1.3 210613 created
  */
 class Arr
@@ -14,7 +15,7 @@ class Arr
         $str = '';
         foreach ($arr as $val) {
             if ($str) {
-                $str = $sep . $str;
+                $str .= $sep;
             }
             $str .= $prefix . $val . $postfix;
         }
