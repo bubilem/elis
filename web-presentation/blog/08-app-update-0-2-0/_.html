@@ -1,0 +1,59 @@
+<h2>Home page</h2>
+<p>
+  Menu items are displayed according to the role of the currently logged in user. Admin can see all
+  items.
+</p>
+<figure>
+  <img src="blog/08-app-update-0-2-0/home-page.png" />
+  <figcaption>Home page</figcaption>
+</figure>
+
+<h2>Dispatcher section</h2>
+<p>
+  Routes can now be closed. However, this is only allowed if they no longer contain any packages.
+  The route listing table has changed. The dispatcher now sees the date and type of the last event.
+  Closed routes are displayed differently and are located at the end of the list below the active
+  ones. When creating a new route, the logged-in user automatically becomes its dispatcher. He
+  cannot remove himself from the route.
+</p>
+<figure>
+  <img src="blog/08-app-update-0-2-0/dsp-routes.png" />
+  <figcaption>Routes</figcaption>
+</figure>
+<p>
+  It is now possible to add events in the event list for the route. A new event INS (instructions)
+  has been added. If a route is closed, we cannot add more events to it.
+</p>
+<figure>
+  <img src="blog/08-app-update-0-2-0/dsp-route-log.png" />
+  <figcaption>Route log</figcaption>
+</figure>
+<p>
+  Packages have a clearer table. Their journey can now be ended. In addition to the final FRW
+  (forwarded) and DST (destroyed) states, a new CNC (canceled) state has been added. If the package
+  is in a route, we can easily get to the route log.
+</p>
+<figure>
+  <img src="blog/08-app-update-0-2-0/dsp-packages.png" />
+  <figcaption>Packages</figcaption>
+</figure>
+<p>The package log has been rebuilt and now shows the event, route and location.</p>
+<figure>
+  <img src="blog/08-app-update-0-2-0/dsp-package-log.png" />
+  <figcaption>Package log</figcaption>
+</figure>
+
+<h2>Driver section</h2>
+<p>
+  The changes in the driver section are similar to the changes in event management in the dispatcher
+  section.
+</p>
+
+<h2>Statistics v0.2.0</h2>
+<ul>
+  <li><b>122</b> files</li>
+  <li><b>6.630</b> lines of source code</li>
+  <li><b>40</b> classes</li>
+  <li><b>250</b> functions</li>
+  <li>see actual <a href="https://elis.jid-project.eu/analyze.php">statistics</a></li>
+</ul>

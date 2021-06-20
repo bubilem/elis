@@ -11,6 +11,7 @@ use elis\utils\db;
 
 /**
  * Event dispatcher administration presenter
+ * @version 0.2.0 210620 packages in log, event selection
  * @version 0.1.4 210614 last error mess, getLog, getRoutes
  * @version 0.0.1 210610 created
  */
@@ -39,12 +40,7 @@ class DspEvent extends Dispatcher
             'route' => $route->getid()
         ]);
         $options = '';
-        $result = (new db\Select())
-            ->setSelect("p.id, p.code, p.type, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package")
-            ->setHaving("laststate = 'WTG'")
-            ->setGroup("p.id")
-            ->run();
+        $result = model\Package::getPackagesToLoad();
         if (empty($result)) {
             $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
@@ -58,7 +54,7 @@ class DspEvent extends Dispatcher
             $checkboxTmplt->clearData()->setAllData([
                 'name' => 'pck',
                 'id' => $item['id'],
-                'label' => $item['code'],
+                'label' => $item['name'],
                 'checked' => ''
             ]);
             $options .= $checkboxTmplt;
@@ -98,9 +94,9 @@ class DspEvent extends Dispatcher
         if (empty($pcks)) {
             $this->dspTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
-                'message' => 'Mo packages to load.'
+                'message' => 'No packages to load.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $ev = new Event("LOD");
@@ -126,7 +122,7 @@ class DspEvent extends Dispatcher
             $messageTmplt->setData('type', 'err');
         }
         $this->dspTmplt->addData('content', $messageTmplt);
-        $this->table();
+        $this->log($route);
     }
 
     public function unlForm()
@@ -145,19 +141,13 @@ class DspEvent extends Dispatcher
             'route' => $route->getid()
         ]);
         $options = '';
-        $result = (new db\Select())
-            ->setSelect("p.id, p.code, p.type, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package JOIN event e ON e.id = l.event")
-            ->setWhere("e.route = " . $route->getId())
-            ->setGroup("p.id")
-            ->setHaving("laststate NOT IN('WTG','ACP','DST','FRW')")
-            ->run();
+        $result = $route->getLoadedPackages();
         if (empty($result)) {
             $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
-                'message' => 'Nothing to load, no waiting packages.'
+                'message' => 'No packages to unload.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $checkboxTmplt = new utils\Template("other/checkbox.html");
@@ -165,7 +155,7 @@ class DspEvent extends Dispatcher
             $checkboxTmplt->clearData()->setAllData([
                 'name' => 'pck',
                 'id' => $item['id'],
-                'label' => $item['code'],
+                'label' => $item['name'],
                 'checked' => ''
             ]);
             $options .= $checkboxTmplt;
@@ -207,7 +197,7 @@ class DspEvent extends Dispatcher
                 'type' => 'err',
                 'message' => 'No packages to unload.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $ev = new Event("UNL");
@@ -233,22 +223,12 @@ class DspEvent extends Dispatcher
             $messageTmplt->setData('type', 'err');
         }
         $this->dspTmplt->addData('content', $messageTmplt);
-        $this->table();
+        $this->log($route);
     }
 
     public function event()
     {
         $messageTmplt = new utils\Template("other/message.html");
-        $eventType = strtoupper($this->getParam(2));
-        $eventTypes = new CodeList('event-types.json');
-        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
-            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
-                'type' => 'err',
-                'message' => 'Event type does not exist.'
-            ]));
-            $this->table();
-            return;
-        }
         $route = new model\Route($this->getParam(3));
         if (!$route->getId()) {
             $this->dspTmplt->addData('content', $messageTmplt->setAllData([
@@ -256,6 +236,16 @@ class DspEvent extends Dispatcher
                 'message' => 'Route does not exist.'
             ]));
             $this->table();
+            return;
+        }
+        $eventType = strtoupper($this->getParam(2));
+        $eventTypes = new CodeList('event-types.json');
+        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
+            $this->dspTmplt->addData('content', $messageTmplt->setAllData([
+                'type' => 'err',
+                'message' => 'Event type does not exist.'
+            ]));
+            $this->log($route);
             return;
         }
         if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT)) {
@@ -277,7 +267,7 @@ class DspEvent extends Dispatcher
                     $messageTmplt->setData('type', 'err');
                 }
                 $this->dspTmplt->addData('content', $messageTmplt);
-                $this->table();
+                $this->log($route);
                 return;
             } else {
                 $this->dspTmplt->addData('content', $messageTmplt->setAllData([
@@ -309,10 +299,12 @@ class DspEvent extends Dispatcher
         $this->dspTmplt->addData('content', (string)$formTmplt);
     }
 
-    public function log()
+    public function log(model\Route $route = null)
     {
         $messageTmplt = new utils\Template("other/message.html");
-        $route = new model\Route($this->getParam(2));
+        if ($route == null) {
+            $route = new model\Route($this->getParam(2));
+        }
         if (!$route->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Route does not exist.",
@@ -321,6 +313,27 @@ class DspEvent extends Dispatcher
             $this->dspTmplt->setData('content', $messageTmplt);
             $this->table();
         }
+        $nav = '';
+        if (!$route->getEnd()) {
+            foreach ([
+                'ins' => 'event/ins',
+                'lod' => 'lod-form',
+                'unl' => 'unl-form',
+                'wtg' => 'event/wtg',
+                'onw' => 'event/onw',
+                'rst' => 'event/rst',
+                'rfl' => 'event/rfl',
+                'acd' => 'event/acd',
+                'oth' => 'event/oth'
+            ] as $cap => $href) {
+                $linkTmplt = new utils\Template("other/link-btn.html");
+                $nav .= $linkTmplt->setAllData([
+                    'href' => 'dsp-event/' . $href . '/' . $route->getId(),
+                    'caption' => $cap
+                ]) . ' ';
+            }
+        }
+
         $tableRowTmplt = new utils\Template("dsp/event/event-table-row.html");
         $rows = '';
         foreach ($route->getLog() as $record) {
@@ -328,6 +341,7 @@ class DspEvent extends Dispatcher
                 'id' => $record['id'],
                 'date' => $record['date'],
                 'type' => $record['type'],
+                'packages' => $record['packages'],
                 'user' => $record['username'],
                 'place' => $record['placename'],
                 'description' => $record['description']
@@ -336,6 +350,10 @@ class DspEvent extends Dispatcher
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/event/event-table.html", [
             'caption' => "Route $route log",
+            'begin' => $route->getBegin(),
+            'end' => $route->getend() ? $route->getend() : '-',
+            'status' => $route->getend() ? 'Closed' : 'Active',
+            'nav' => $nav,
             'rows' => $rows
         ]));
         if (empty($rows)) {
@@ -351,14 +369,16 @@ class DspEvent extends Dispatcher
         $tableRowTmplt = new utils\Template("dsp/event/route-table-row.html");
         $rows = '';
         foreach (model\Route::getRoutes($this->user, ['DSP']) as $record) {
-            $vehicle = (new db\Select())->setSelect("name")->setFrom("vehicle")->setWhere("id = " . $record['vehicle'])->run();
             $tableRowTmplt->clearData()->setAllData([
                 'id' => $record['id'],
                 'name' => $record['name'],
+                'status' => $record['end'] ? 'Closed' : 'Active',
                 'state' => $record['laststate'],
                 'date' => $record['laststatedate'],
                 'mileage' => $record['mileage'],
-                'vehicle' => empty($vehicle[0]['name']) ? '' : $vehicle[0]['name']
+                'vehicle' => $record['vehiclename'],
+                'description' => $record['description'],
+                'class' => $record['end'] ? 'closed' : 'active'
             ]);
             $rows .= $tableRowTmplt;
         }

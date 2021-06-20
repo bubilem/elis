@@ -1,4 +1,5 @@
 {
+  "INS": "instructions",
   "LOD": "loading",
   "UNL": "unloading",
   "WTG": "waiting",

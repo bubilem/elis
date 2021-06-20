@@ -35,10 +35,16 @@
     "intro": "We create a web presentation so that we can present the project and document it on an ongoing basis.",
     "date": "26. 2. 2021"
   },
-  "07-app-update": {
+  "07-app-update-0-1-3": {
     "title": "Web application update 0.1.3",
     "menu-item-name": "App update 0.1.3",
     "intro": "We did a lot of work on web application. We have added an interface for dispatchers and drivers.",
     "date": "13. 6. 2021"
+  },
+  "08-app-update-0-2-0": {
+    "title": "Web application update 0.2.0",
+    "menu-item-name": "App update 0.2.0",
+    "intro": "In this update, we've done a lot around managing packages and routes.",
+    "date": "20. 6. 2021"
   }
 }

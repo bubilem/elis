@@ -3,14 +3,17 @@
 namespace elis\presenter;
 
 use elis\model;
+use elis\model\CodeList;
+use elis\model\CodeListItem;
 use elis\model\Event;
 use elis\utils;
 use elis\utils\db;
 
 /**
  * Event driver administration presenter
- * @version 0.1.4 210614 last error mess, getLog
- * @version 0.1.3 210613 created
+ * @version 0.2.0 210619 packages in log, event selection
+ * @version 0.1.4 210614 last error mess, getLog, getRoutes
+ * @version 0.0.1 210610 created
  */
 class DrvEvent extends Driver
 {
@@ -37,12 +40,7 @@ class DrvEvent extends Driver
             'route' => $route->getid()
         ]);
         $options = '';
-        $result = (new db\Select())
-            ->setSelect("p.id, p.code, p.type, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package")
-            ->setHaving("laststate = 'WTG'")
-            ->setGroup("p.id")
-            ->run();
+        $result = model\Package::getPackagesToLoad();
         if (empty($result)) {
             $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
@@ -56,7 +54,7 @@ class DrvEvent extends Driver
             $checkboxTmplt->clearData()->setAllData([
                 'name' => 'pck',
                 'id' => $item['id'],
-                'label' => $item['code'],
+                'label' => $item['name'],
                 'checked' => ''
             ]);
             $options .= $checkboxTmplt;
@@ -96,9 +94,9 @@ class DrvEvent extends Driver
         if (empty($pcks)) {
             $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
-                'message' => 'Mo packages to load.'
+                'message' => 'No packages to load.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $ev = new Event("LOD");
@@ -124,7 +122,7 @@ class DrvEvent extends Driver
             $messageTmplt->setData('type', 'err');
         }
         $this->drvTmplt->addData('content', $messageTmplt);
-        $this->table();
+        $this->log($route);
     }
 
     public function unlForm()
@@ -143,19 +141,13 @@ class DrvEvent extends Driver
             'route' => $route->getid()
         ]);
         $options = '';
-        $result = (new db\Select())
-            ->setSelect("p.id, p.code, p.type, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package JOIN event e ON e.id = l.event")
-            ->setWhere("e.route = " . $route->getId())
-            ->setGroup("p.id")
-            ->setHaving("laststate NOT IN('WTG','ACP','DST','FRW')")
-            ->run();
+        $result = $route->getLoadedPackages();
         if (empty($result)) {
             $this->drvTmplt->addData('content', new utils\Template("other/message.html", [
                 'type' => 'war',
-                'message' => 'Nothing to load, no waiting packages.'
+                'message' => 'No packages to unload.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $checkboxTmplt = new utils\Template("other/checkbox.html");
@@ -163,7 +155,7 @@ class DrvEvent extends Driver
             $checkboxTmplt->clearData()->setAllData([
                 'name' => 'pck',
                 'id' => $item['id'],
-                'label' => $item['code'],
+                'label' => $item['name'],
                 'checked' => ''
             ]);
             $options .= $checkboxTmplt;
@@ -205,7 +197,7 @@ class DrvEvent extends Driver
                 'type' => 'err',
                 'message' => 'No packages to unload.'
             ]));
-            $this->table();
+            $this->log($route);
             return;
         }
         $ev = new Event("UNL");
@@ -227,26 +219,16 @@ class DrvEvent extends Driver
                 }
             }
         } else {
-            $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
+            $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
             $messageTmplt->setData('type', 'err');
         }
         $this->drvTmplt->addData('content', $messageTmplt);
-        $this->table();
+        $this->log($route);
     }
 
     public function event()
     {
         $messageTmplt = new utils\Template("other/message.html");
-        $eventType = strtoupper($this->getParam(2));
-        $eventTypes = new model\CodeList('event-types.json');
-        if (!($eventTypes->getItem($eventType) instanceof model\CodeListItem)) {
-            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
-                'type' => 'err',
-                'message' => 'Event type does not exist.'
-            ]));
-            $this->table();
-            return;
-        }
         $route = new model\Route($this->getParam(3));
         if (!$route->getId()) {
             $this->drvTmplt->addData('content', $messageTmplt->setAllData([
@@ -254,6 +236,16 @@ class DrvEvent extends Driver
                 'message' => 'Route does not exist.'
             ]));
             $this->table();
+            return;
+        }
+        $eventType = strtoupper($this->getParam(2));
+        $eventTypes = new CodeList('event-types.json');
+        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
+            $this->drvTmplt->addData('content', $messageTmplt->setAllData([
+                'type' => 'err',
+                'message' => 'Event type does not exist.'
+            ]));
+            $this->log($route);
             return;
         }
         if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT)) {
@@ -275,7 +267,7 @@ class DrvEvent extends Driver
                     $messageTmplt->setData('type', 'err');
                 }
                 $this->drvTmplt->addData('content', $messageTmplt);
-                $this->table();
+                $this->log($route);
                 return;
             } else {
                 $this->drvTmplt->addData('content', $messageTmplt->setAllData([
@@ -307,10 +299,12 @@ class DrvEvent extends Driver
         $this->drvTmplt->addData('content', (string)$formTmplt);
     }
 
-    public function log()
+    public function log(model\Route $route = null)
     {
         $messageTmplt = new utils\Template("other/message.html");
-        $route = new model\Route($this->getParam(2));
+        if ($route == null) {
+            $route = new model\Route($this->getParam(2));
+        }
         if (!$route->getId()) {
             $messageTmplt->setAllData([
                 'message' => "Route does not exist.",
@@ -319,6 +313,26 @@ class DrvEvent extends Driver
             $this->drvTmplt->setData('content', $messageTmplt);
             $this->table();
         }
+        $nav = '';
+        if (!$route->getEnd()) {
+            foreach ([
+                'lod' => 'lod-form',
+                'unl' => 'unl-form',
+                'wtg' => 'event/wtg',
+                'onw' => 'event/onw',
+                'rst' => 'event/rst',
+                'rfl' => 'event/rfl',
+                'acd' => 'event/acd',
+                'oth' => 'event/oth'
+            ] as $cap => $href) {
+                $linkTmplt = new utils\Template("other/link-btn.html");
+                $nav .= $linkTmplt->setAllData([
+                    'href' => 'drv-event/' . $href . '/' . $route->getId(),
+                    'caption' => $cap
+                ]) . ' ';
+            }
+        }
+
         $tableRowTmplt = new utils\Template("drv/event/event-table-row.html");
         $rows = '';
         foreach ($route->getLog() as $record) {
@@ -326,6 +340,7 @@ class DrvEvent extends Driver
                 'id' => $record['id'],
                 'date' => $record['date'],
                 'type' => $record['type'],
+                'packages' => $record['packages'],
                 'user' => $record['username'],
                 'place' => $record['placename'],
                 'description' => $record['description']
@@ -334,6 +349,10 @@ class DrvEvent extends Driver
         }
         $this->drvTmplt->addData('content', new utils\Template("drv/event/event-table.html", [
             'caption' => "Route $route log",
+            'begin' => $route->getBegin(),
+            'end' => $route->getend() ? $route->getend() : '-',
+            'status' => $route->getend() ? 'Closed' : 'Active',
+            'nav' => $nav,
             'rows' => $rows
         ]));
         if (empty($rows)) {
@@ -344,11 +363,6 @@ class DrvEvent extends Driver
         }
     }
 
-    /**
-     * Table of routes
-     *
-     * @return void
-     */
     protected function table()
     {
         $tableRowTmplt = new utils\Template("drv/event/route-table-row.html");
@@ -357,10 +371,13 @@ class DrvEvent extends Driver
             $tableRowTmplt->clearData()->setAllData([
                 'id' => $record['id'],
                 'name' => $record['name'],
+                'status' => $record['end'] ? 'Closed' : 'Active',
                 'state' => $record['laststate'],
                 'date' => $record['laststatedate'],
                 'mileage' => $record['mileage'],
-                'vehicle' => (string) new model\Vehicle($record['vehicle'])
+                'vehicle' => $record['vehiclename'],
+                'description' => $record['description'],
+                'class' => $record['end'] ? 'closed' : 'active'
             ]);
             $rows .= $tableRowTmplt;
         }

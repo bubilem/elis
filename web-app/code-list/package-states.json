@@ -4,5 +4,6 @@
   "TRN": "transported - in vehicle",
   "DMG": "damaged",
   "DST": "destroyed (end state)",
-  "FRW": "forwarded (end state)"
+  "FRW": "forwarded (end state)",
+  "CNC": "canceled (end state)"
 }

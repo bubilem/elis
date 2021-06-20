@@ -1,15 +1,15 @@
-<tr>
-  <td>{id}</td>
+<tr class="{class}">
   <td>{name}</td>
-  <td>{begin}</td>
-  <td>{end}</td>
+  <td>{status}</td>
   <td>{vehicle}</td>
   <td>{mileage}</td>
+  <td>{state}</td>
+  <td>{date}</td>
   <td>{description}</td>
   <td>
-    <a class="btn" href="drv-event/log/{id}">&#9776; LOG</a>
-    <a class="btn" href="dsp-route/edit-form/{id}">&#9998; edt</a>
-    <a class="btn" href="dsp-route/user-table/{id}">&#9786; usr</a>
+    <a class="btn" href="dsp-event/log/{id}">&#9776; log</a>
+    {edt} {usr}
     <a class="btn" href="dsp-route/delete-question/{id}">&#128465; del</a>
+    {close}
   </td>
 </tr>

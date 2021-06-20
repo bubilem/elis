@@ -9,6 +9,7 @@ use elis\utils\Template;
 
 /**
  * Package dispatcher administration presenter
+ * @version 0.2.0 210619 link to the route log, table, new states...
  * @version 0.1.4 210614 last error mess, getLog, getPackages
  * @version 0.0.1 210610 created
  */
@@ -221,28 +222,47 @@ class DspPackage extends Dispatcher
         $this->table();
     }
 
-    protected function toWtg()
+    protected function to()
     {
-        $model = new model\Package($this->getParam(2));
+        $newState = strtoupper($this->getParam(2));
+        $package = new model\Package($this->getParam(3));
+        $states = new model\CodeList("package-states.json");
         $messageTmplt = new utils\Template("other/message.html");
-        if ($model->getId()) {
-            $model->setState('WTG');
-            if ($model->save()) {
-                $model->createLog("WTG")->save();
+        if (!$states->exists($newState)) {
+            $messageTmplt->setAllData([
+                'message' => "New state does not exist.",
+                'type' => 'err'
+            ]);
+        } else if (!$package->getId()) {
+            $messageTmplt->setAllData([
+                'message' => "Package to change does not exist.",
+                'type' => 'err'
+            ]);
+        }
+        $lastLog = $package->getLastLog();
+        if (
+            $lastLog->getState() != $newState && !in_array($lastLog->getState(), ['DST', 'FRW', 'CNC']) &&
+            (
+                ($lastLog->getState() == 'ACP' && in_array($newState, ['WTG'])) ||
+                ($lastLog->getState() == 'WTG' && in_array($newState, ['DST', 'FRW'])) ||
+                ($newState == 'CNC'))
+        ) {
+            $newLog = $package->createLog($newState);
+            if ($newLog->save()) {
                 $messageTmplt->setAllData([
-                    'message' => "State of package $model has been setted to WTG.",
+                    'message' => "State of package $package has been setted to $newState.",
                     'type' => 'suc'
                 ]);
             } else {
                 $messageTmplt->setAllData([
-                    'message' => "State of package $model has not been setted to WTG." . db\MySQL::getLastError(),
+                    'message' => "State of package $package has not been setted to $newState." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
         } else {
             $messageTmplt->setAllData([
-                'message' => "Package to change does not exist.",
-                'type' => 'err'
+                'message' => "Can't set state " . $lastLog->getState() . " to $newState.",
+                'type' => 'war'
             ]);
         }
         $this->dspTmplt->setData('content', $messageTmplt);
@@ -262,14 +282,22 @@ class DspPackage extends Dispatcher
             $this->table();
         }
         $tableRowTmplt = new utils\Template("dsp/package/log-table-row.html");
+        $linkTmplt = new Template("other/link.html");
         $rows = '';
-        foreach ($package->getLog() as $record) {
+        foreach ($package->getLogList() as $record) {
             $tableRowTmplt->clearData()->setAllData([
                 'id' => $record['id'],
                 'date' => $record['date'],
                 'package' => $record['package'],
                 'state' => $record['state'],
-                'event' => $record['eventtype']
+                'event' => $record['eventtype'],
+                'route' => $record['routeid'] ? (string)$linkTmplt->setAllData(
+                    [
+                        'href' => "dsp-event/log/" . $record['routeid'],
+                        'label' => $record['routename']
+                    ]
+                ) : $record['routename'],
+                'place' => $record['placename']
             ]);
             $rows .= $tableRowTmplt;
         }
@@ -289,22 +317,54 @@ class DspPackage extends Dispatcher
     {
         $tableRowTmplt = new utils\Template("dsp/package/table-row.html");
         $rows = '';
-        $btnLink = new Template("other/link-btn.html", ['caption' => 'WTG']);
+        $btnLinkTmplt = new Template("other/link-btn.html");
+        $linkTmplt = new Template("other/link.html");
         foreach (model\Package::getPackages() as $record) {
+            $lastStateName = $record['laststate'];
+            $lastStateRouteId = null;
+            $tmp = explode("|", $record['laststate']);
+            if (is_array($tmp) && isset($tmp[0]) && isset($tmp[1])) {
+                $lastStateName = $tmp[0];
+                $lastStateRouteId = $tmp[1];
+            }
+            $lastState = substr($lastStateName, 0, 3);
             $tableRowTmplt->clearData()->setAllData([
                 'id' => $record['id'],
                 'code' => $record['code'],
                 'type' => $record['type'],
-                'state' => $record['laststate'],
+                'state' => $lastStateRouteId ? (string)$linkTmplt->setAllData(
+                    [
+                        'href' => "dsp-event/log/$lastStateRouteId",
+                        'label' => $lastStateName
+                    ]
+                ) : $lastStateName,
                 'dimension' => implode(' x ', [$record['width'], $record['height'], $record['lenght']]),
                 'weight' => $record['weight'],
-                'description' => $record['description']
+                'description' => $record['description'],
+                'edt' => '',
+                'wtg' => '',
+                'dst' => '',
+                'frw' => '',
+                'cnc' => '',
+                'class' => in_array($lastState, ['DST', 'FRW', 'CNC']) ? 'closed' : 'active'
             ]);
-            if ($record['laststate'] == 'ACP') {
-                $btnLink->setData('href', 'dsp-package/to-wtg/' . $record['id']);
-                $tableRowTmplt->setData('wtg', $btnLink);
-            } else {
-                $tableRowTmplt->setData('wtg', '');
+            if (!in_array($lastState, ['DST', 'FRW', 'CNC'])) {
+                $btnLinkTmplt->setAllData(['caption' => '&#9998; edt', 'href' => 'dsp-package/edit-form/' . $record['id']]);
+                $tableRowTmplt->setData('edt', (string)$btnLinkTmplt);
+            }
+            if ($lastState == 'ACP') {
+                $btnLinkTmplt->setAllData(['caption' => 'WTG', 'href' => 'dsp-package/to/wtg/' . $record['id']]);
+                $tableRowTmplt->setData('wtg', (string)$btnLinkTmplt);
+                $btnLinkTmplt->setAllData(['caption' => 'CNC', 'href' => 'dsp-package/to/cnc/' . $record['id']]);
+                $tableRowTmplt->setData('cnc', (string)$btnLinkTmplt);
+            }
+            if ($lastState == 'WTG') {
+                $btnLinkTmplt->setAllData(['caption' => 'DST', 'href' => 'dsp-package/to/dst/' . $record['id']]);
+                $tableRowTmplt->setData('dst', (string)$btnLinkTmplt);
+                $btnLinkTmplt->setAllData(['caption' => 'FRW', 'href' => 'dsp-package/to/frw/' . $record['id']]);
+                $tableRowTmplt->setData('frw', (string)$btnLinkTmplt);
+                $btnLinkTmplt->setAllData(['caption' => 'CNC', 'href' => 'dsp-package/to/cnc/' . $record['id']]);
+                $tableRowTmplt->setData('cnc', (string)$btnLinkTmplt);
             }
             $rows .= $tableRowTmplt;
         }

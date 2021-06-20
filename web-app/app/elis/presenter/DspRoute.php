@@ -8,6 +8,7 @@ use elis\utils\db;
 
 /**
  * Route dispatcher administration presenter
+ * @version 0.2.0 210620 close the route, table
  * @version 0.1.4 210614 last error mess
  * @version 0.0.1 210112 created
  */
@@ -20,7 +21,7 @@ class DspRoute extends Dispatcher
         $this->pageTmplt->setData('title', 'Dispatcher :: Route Administration');
     }
 
-    public function newForm($model = null)
+    public function newForm($route = null)
     {
         $vehicles = '';
         $vehiclesTmplt = new utils\Template("dsp/route/route-form-option.html");
@@ -28,72 +29,81 @@ class DspRoute extends Dispatcher
             $vehiclesTmplt->setAllData([
                 'value' => $vehicle['id'],
                 'name' => $vehicle['name'],
-                'selected' => $model instanceof model\Route && $model->getVehicle() == $vehicle['id'] ? 'selected' : ''
+                'selected' => $route instanceof model\Route && $route->getVehicle() == $vehicle['id'] ? 'selected' : ''
             ]);
             $vehicles .= (string)$vehiclesTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/route/route-form.html", [
             'caption' => 'New Route',
             'operation' => 'new',
-            'name' => $model instanceof model\Route ? $model->getName() : '',
-            'begin' => $model instanceof model\Route ? $model->getBegin() : date("Y-m-d"),
+            'name' => $route instanceof model\Route ? $route->getName() : '',
+            'begin' => $route instanceof model\Route ? $route->getBegin() : date("Y-m-d"),
             'vehicles' => $vehicles,
-            'description' => $model instanceof model\Route ? $model->getDescription() : ''
+            'description' => $route instanceof model\Route ? $route->getDescription() : ''
         ]));
     }
 
     protected function new()
     {
-        $model = new model\Route();
-        $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
-        $model->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
-        $model->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
-        $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        $route = new model\Route();
+        $route->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+        $route->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
+        $route->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
         $messageTmplt = new utils\Template("other/message.html");
         $sameNameRoute = (new db\Select())
             ->setSelect('id')
             ->setFrom('route')
-            ->setWhere("name = '" . $model->getName() . "'")
+            ->setWhere("name = '" . $route->getName() . "'")
             ->run();
         if (empty($sameNameRoute)) {
-            if ($model->save()) {
-                $messageTmplt->setData('message', 'Route ' . $model . ' has been created.');
-                $messageTmplt->setData('type', 'suc');
+            if ($route->save()) {
+                $rhu = new model\RouteHasUser();
+                $rhu->setRoute($route->getId());
+                $rhu->setUser($this->user->getId());
+                $rhu->setRole('DSP');
+                $rhu->setAssigned(utils\Date::dbNow());
+                if ($rhu->save()) {
+                    $messageTmplt->setData('message', 'Route ' . $route . ' has been created. User ' . $rhu->getUser() . ' has been added to route.');
+                    $messageTmplt->setData('type', 'suc');
+                } else {
+                    $messageTmplt->setData('message', 'Route ' . $route . ' has been created. User ' . $rhu->getUser() . ' has not been added to route.' . db\MySQL::getLastError());
+                    $messageTmplt->setData('type', 'err');
+                }
             } else {
-                $messageTmplt->setData('message', 'Route ' . $model . ' has not been created.' . db\MySQL::getLastError());
+                $messageTmplt->setData('message', 'Route ' . $route . ' has not been created.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->dspTmplt->addData('content', $messageTmplt);
             $this->table();
         } else {
-            $messageTmplt->setData('message', 'Code ' . $model->getCode() . ' already exists. New route ' . $model . ' has not been created.');
+            $messageTmplt->setData('message', 'Code ' . $route->getCode() . ' already exists. New route ' . $route . ' has not been created.');
             $messageTmplt->setData('type', 'war');
             $this->dspTmplt->addData('content', $messageTmplt);
-            $this->newForm($model);
+            $this->newForm($route);
         }
     }
 
-    protected function editForm($model = null)
+    protected function editForm($route = null)
     {
-        $model = new model\Route($this->getParam(2));
-        if ($model->getId()) {
+        $route = new model\Route($this->getParam(2));
+        if ($route->getId()) {
             $vehicles = '';
             $vehiclesTmplt = new utils\Template("dsp/route/route-form-option.html");
             foreach ((new db\Select())->setSelect("*")->setFrom("vehicle")->setOrder("name")->run() as $vehicle) {
                 $vehiclesTmplt->setAllData([
                     'value' => $vehicle['id'],
                     'name' => $vehicle['name'],
-                    'selected' => $model->getVehicle() == $vehicle['id'] ? 'selected' : ''
+                    'selected' => $route->getVehicle() == $vehicle['id'] ? 'selected' : ''
                 ]);
                 $vehicles .= (string)$vehiclesTmplt;
             }
             $this->dspTmplt->addData('content', new utils\Template("dsp/route/route-form.html", [
                 'caption' => 'Edit Route',
-                'operation' => 'edit/' . $model->getId(),
-                'name' => $model->getName(),
-                'begin' => substr($model->getBegin(), 0, 10),
+                'operation' => 'edit/' . $route->getId(),
+                'name' => $route->getName(),
+                'begin' => substr($route->getBegin(), 0, 10),
                 'vehicles' => $vehicles,
-                'description' => $model->getDescription()
+                'description' => $route->getDescription()
             ]));
         } else {
             $this->dspTmplt->addData('content', new utils\Template("other/message.html", [
@@ -106,26 +116,26 @@ class DspRoute extends Dispatcher
 
     protected function edit()
     {
-        $model = new model\Route($this->getParam(2));
-        $model->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
-        $model->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
-        $model->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
-        $model->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        $route = new model\Route($this->getParam(2));
+        $route->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+        $route->setBegin(filter_input(INPUT_POST, 'begin', FILTER_SANITIZE_STRING));
+        $route->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
+        $route->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
         $messageTmplt = new utils\Template("other/message.html");
         $sameName = (new db\Select())
             ->setSelect('id')
             ->setFrom('route')
-            ->setWhere("id <> " . $model->getId() . " AND name = '" . $model->getName() . "'")
+            ->setWhere("id <> " . $route->getId() . " AND name = '" . $route->getName() . "'")
             ->run();
         if (empty($sameName)) {
-            if ($model->save()) {
+            if ($route->save()) {
                 $messageTmplt->setAllData([
-                    'message' => 'route ' . $model . ' has been saved.',
+                    'message' => 'route ' . $route . ' has been saved.',
                     'type' => 'suc'
                 ]);
             } else {
                 $messageTmplt->setAllData([
-                    'message' => 'route ' . $model . ' has not been saved. ' . db\MySQL::getLastError(),
+                    'message' => 'route ' . $route . ' has not been saved. ' . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -133,21 +143,21 @@ class DspRoute extends Dispatcher
             $this->table();
         } else {
             $messageTmplt->setAllData([
-                'message' => 'Name ' . $model->getCode() . ' already exists. route ' . $model . ' has not been saved.',
+                'message' => 'Name ' . $route->getCode() . ' already exists. route ' . $route . ' has not been saved.',
                 'type' => 'war'
             ]);
             $this->dspTmplt->addData('content', $messageTmplt);
-            $this->editForm($model);
+            $this->editForm($route);
         }
     }
 
     protected function deleteQuestion()
     {
-        $model = new model\Route($this->getParam(2));
-        if ($model->getId()) {
+        $route = new model\Route($this->getParam(2));
+        if ($route->getId()) {
             $deleteQuestionTmplt = new utils\Template("dsp/route/route-delete-yes-no.html", [
-                'id' => $model->getId(),
-                'route' => (string)$model
+                'id' => $route->getId(),
+                'route' => (string)$route
             ]);
             $this->dspTmplt->addData('content', $deleteQuestionTmplt);
         } else {
@@ -161,16 +171,16 @@ class DspRoute extends Dispatcher
 
     protected function delete()
     {
-        $model = new model\Route($this->getParam(2));
+        $route = new model\Route($this->getParam(2));
         $messageTmplt = new utils\Template("other/message.html");
-        if ($model->getId()) {
+        if ($route->getId()) {
             $messageTmplt->setAllData([
-                'message' => "Route $model has been deleted.",
+                'message' => "Route $route has been deleted.",
                 'type' => 'suc'
             ]);
-            if (!$model->delete()) {
+            if (!$route->delete()) {
                 $messageTmplt->setAllData([
-                    'message' => "Route $model has not been deleted." . db\MySQL::getLastError(),
+                    'message' => "Route $route has not been deleted." . db\MySQL::getLastError(),
                     'type' => 'err'
                 ]);
             }
@@ -184,29 +194,79 @@ class DspRoute extends Dispatcher
         $this->table();
     }
 
+    protected function close()
+    {
+        $route = new model\Route($this->getParam(2));
+        $messageTmplt = new utils\Template("other/message.html");
+        if ($route->getId()) {
+            $loadedPackages = $route->getLoadedPackages();
+            if (!empty($loadedPackages)) {
+                $messageTmplt->setAllData([
+                    'type' => 'war',
+                    'message' => 'There are loaded packages in the route.'
+                ]);
+            } else {
+                if ($this->getParam(3) == 'go') {
+                    $route->setEnd(utils\Date::dbNow());
+                    if ($route->save()) {
+                        $messageTmplt->setAllData([
+                            'message' => 'route ' . $route . ' has been closed.',
+                            'type' => 'suc'
+                        ]);
+                    } else {
+                        $messageTmplt->setAllData([
+                            'message' => 'route ' . $route . ' has not been closed. ' . db\MySQL::getLastError(),
+                            'type' => 'err'
+                        ]);
+                    }
+                } else {
+                    $deleteQuestionTmplt = new utils\Template("dsp/route/route-close-yes-no.html", [
+                        'id' => $route->getId(),
+                        'route' => (string)$route
+                    ]);
+                    $this->dspTmplt->addData('content', $deleteQuestionTmplt);
+                    return;
+                }
+            }
+        } else {
+            $messageTmplt->setAllData([
+                'type' => 'err',
+                'message' => 'Route to close does not exist.'
+            ]);
+        }
+        $this->dspTmplt->setData('content', $messageTmplt);
+        $this->table();
+    }
+
     protected function table()
     {
         $tableRowTmplt = new utils\Template("dsp/route/route-table-row.html");
+        $btnLinkTmplt = new utils\Template("other/link-btn.html");
         $rows = '';
-        $query = (new db\Select())
-            ->setSelect("*")
-            ->setFrom("route")
-            ->setOrder("begin DESC");
-        $queryResult = $query->run();
-        if (is_array($queryResult)) {
-            foreach ($queryResult as $record) {
-                $vehicle = (new db\Select())->setSelect("name")->setFrom("vehicle")->setWhere("id = " . $record['vehicle'])->run();
-                $tableRowTmplt->clearData()->setAllData([
-                    'id' => $record['id'],
-                    'name' => $record['name'],
-                    'begin' => $record['begin'],
-                    'end' => $record['end'],
-                    'mileage' => $record['mileage'],
-                    'vehicle' => empty($vehicle[0]['name']) ? '' : $vehicle[0]['name'],
-                    'description' => $record['description']
-                ]);
-                $rows .= $tableRowTmplt;
+        foreach (model\Route::getRoutes($this->user, ['DSP']) as $record) {
+            $tableRowTmplt->clearData()->setAllData([
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'status' => $record['end'] ? 'Closed' : 'Active',
+                'state' => $record['laststate'],
+                'date' => $record['laststatedate'],
+                'mileage' => $record['mileage'],
+                'vehicle' => $record['vehiclename'],
+                'description' => $record['description'],
+                'class' => $record['end'] ? 'closed' : 'active',
+                'edt' => '',
+                'usr' => '',
+                'close' => ''
+            ]);
+            if (empty($record['end'])) {
+                $btnLinkTmplt->setAllData(['caption' => 'CLOSE', 'href' => 'dsp-route/close/' . $record['id']]);
+                $tableRowTmplt->setData('close', (string)$btnLinkTmplt);
+                $btnLinkTmplt->setAllData(['caption' => '&#9998; edt', 'href' => 'dsp-route/edit-form/' . $record['id']]);
+                $tableRowTmplt->setData('edt', (string)$btnLinkTmplt);
+                $btnLinkTmplt->setAllData(['caption' => '&#9786; usr', 'href' => 'dsp-route/user-table/' . $record['id']]);
+                $tableRowTmplt->setData('usr', (string)$btnLinkTmplt);
             }
+            $rows .= $tableRowTmplt;
         }
         $this->dspTmplt->addData('content', new utils\Template("dsp/route/route-table.html", [
             'caption' => 'Route List',
@@ -268,37 +328,37 @@ class DspRoute extends Dispatcher
     protected function newUser()
     {
         $route = new model\Route($this->getParam(2));
-        $model = new model\RouteHasUser();
-        $model->setRoute($route->getId());
-        $model->setUser(filter_input(INPUT_POST, 'user', FILTER_SANITIZE_STRING));
-        $model->setRole(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING));
-        $model->setAssigned(utils\Date::dbNow());
+        $rhu = new model\RouteHasUser();
+        $rhu->setRoute($route->getId());
+        $rhu->setUser(filter_input(INPUT_POST, 'user', FILTER_SANITIZE_STRING));
+        $rhu->setRole(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING));
+        $rhu->setAssigned(utils\Date::dbNow());
         $messageTmplt = new utils\Template("other/message.html");
         $sameUserInRoute = (new db\Select())
             ->setSelect('*')
             ->setFrom('route_has_user')
-            ->setWhere('route = ' . $model->getRoute() . ' && user = ' . $model->getUser())
+            ->setWhere('route = ' . $rhu->getRoute() . ' && user = ' . $rhu->getUser())
             ->run();
-        if (!$model->getRoute() || !$model->getUser()) {
+        if (!$rhu->getRoute() || !$rhu->getUser()) {
             $messageTmplt->setData('message', 'Fail.');
             $messageTmplt->setData('type', 'war');
             $this->dspTmplt->addData('content', $messageTmplt);
-            $this->newUserForm($model);
+            $this->newUserForm($rhu);
         } else if (empty($sameUserInRoute)) {
-            if ($model->save()) {
-                $messageTmplt->setData('message', 'User ' . $model->getUser() . ' has been added to route.');
+            if ($rhu->save()) {
+                $messageTmplt->setData('message', 'User ' . $rhu->getUser() . ' has been added to route.');
                 $messageTmplt->setData('type', 'suc');
             } else {
-                $messageTmplt->setData('message', 'User ' . $model->getUser() . ' has not been added to route.' . db\MySQL::getLastError());
+                $messageTmplt->setData('message', 'User ' . $rhu->getUser() . ' has not been added to route.' . db\MySQL::getLastError());
                 $messageTmplt->setData('type', 'err');
             }
             $this->dspTmplt->addData('content', $messageTmplt);
             $this->userTable();
         } else {
-            $messageTmplt->setData('message', 'User ' . $model->getUser() . ' is already in route.');
+            $messageTmplt->setData('message', 'User ' . $rhu->getUser() . ' is already in route.');
             $messageTmplt->setData('type', 'war');
             $this->dspTmplt->addData('content', $messageTmplt);
-            $this->newUserForm($model);
+            $this->newUserForm($rhu);
         }
     }
 
@@ -324,24 +384,30 @@ class DspRoute extends Dispatcher
 
     protected function userDelete()
     {
-        $model = new model\RouteHasUser(['route' => $this->getParam(2), 'user' => $this->getParam(3)]);
+        $rhu = new model\RouteHasUser(['route' => $this->getParam(2), 'user' => $this->getParam(3)]);
         $messageTmplt = new utils\Template("other/message.html");
-        if ($model->getUser() && $model->getRoute()) {
+        if (!$rhu->getUser() || !$rhu->getRoute()) {
             $messageTmplt->setAllData([
-                'message' => "User has been removed.",
-                'type' => 'suc'
+                'message' => "Record to delete does not exist.",
+                'type' => 'err'
             ]);
-            if (!$model->delete()) {
+        } else if ($this->user->getId() == $rhu->getUser()) {
+            $messageTmplt->setAllData([
+                'message' => "You can't remove yourself.",
+                'type' => 'war'
+            ]);
+        } else {
+            if ($rhu->delete()) {
+                $messageTmplt->setAllData([
+                    'message' => "User has been removed.",
+                    'type' => 'suc'
+                ]);
+            } else {
                 $messageTmplt->setAllData([
                     'message' => "User has not been removed.",
                     'type' => 'err'
                 ]);
             }
-        } else {
-            $messageTmplt->setAllData([
-                'message' => "Record to delete does not exist.",
-                'type' => 'err'
-            ]);
         }
         $this->dspTmplt->setData('content', $messageTmplt);
         $this->userTable();

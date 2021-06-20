@@ -3,10 +3,12 @@
 namespace elis\model;
 
 use elis\utils\Arr;
+use elis\utils\Date;
 use elis\utils\db;
 
 /**
  * Route model class
+ * @version 0.2.0 210619 packages in getLog, getLoadedPackages()
  * @version 0.1.4 210614 getUsersInRoute, getLog
  * @version 0.0.1 210125 created
  */
@@ -15,6 +17,7 @@ class Route extends Main
 
     public function __construct($pk = null)
     {
+        $this->setBegin(Date::dbNow());
         if ($pk != null) {
             $this->load($pk);
         }
@@ -89,14 +92,14 @@ class Route extends Main
     public static function getRoutes(User $user, array $roles): array
     {
         $query = (new db\Select())
-            ->setSelect("r.*, MAX(e.date) laststatedate")
+            ->setSelect("r.*, MAX(e.date) laststatedate, v.name vehiclename")
             ->addSelect("SUBSTRING_INDEX(GROUP_CONCAT(e.type ORDER BY e.date DESC),',',1) laststate")
             ->setFrom("route r LEFT JOIN event e ON r.id = e.route")
-            ->setWhere("r.end is NULL")
+            ->addFrom("LEFT JOIN vehicle v ON v.id = r.vehicle")
             ->setGroup("r.id")
-            ->setOrder("r.begin DESC");
+            ->setOrder("r.end ASC, r.begin DESC");
         if (!$user->isInRole('ADM')) {
-            $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.role IN(" . Arr::toStr($roles) . ")");
+            $query->addFrom("JOIN route_has_user rhu ON r.id = rhu.route AND rhu.user = " . $user->getId() . " AND rhu.role IN(" . Arr::toStr($roles) . ")");
         }
         $queryResult = $query->run();
         return is_array($queryResult) ? $queryResult : [];
@@ -128,13 +131,34 @@ class Route extends Main
         $query = (new db\Select())
             ->setSelect("e.*, CONCAT_WS(' ',u.name, u.surname) username")
             ->addSelect("CONCAT_WS(', ', IF(p.code IS NOT NULL, CONCAT(p.code,' (',CONCAT_WS(', ',p.city_name,p.country_code),')'),'OTH'), e.place_manual) placename")
+            ->addSelect("GROUP_CONCAT(DISTINCT CONCAT_WS('-',pa.code,pa.type) SEPARATOR ', ') packages")
             ->setFrom("event e LEFT JOIN user u ON e.recorded = u.id")
             ->addFrom("LEFT JOIN place p ON e.place = p.id")
+            ->addFrom("LEFT JOIN package_log pl ON pl.event = e.id LEFT JOIN package pa ON pl.package = pa.id")
             ->setWhere("e.route = " . $this->getId())
-            ->setOrder('e.date DESC');
+            ->setGroup("e.id")
+            ->setOrder("e.date DESC");
 
         $queryResult = $query->run();
         return is_array($queryResult) ? $queryResult : [];
+    }
+
+    /**
+     * Get Loaded Packages
+     *
+     * @return array
+     */
+    public function getLoadedPackages(): array
+    {
+        $result = (new db\Select())
+            ->setSelect("p.id, p.code, p.type, CONCAT_WS('-',p.code, p.type) name")
+            ->addSelect("SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
+            ->setFrom("package p JOIN package_log l ON p.id = l.package JOIN event e ON e.id = l.event")
+            ->setWhere("e.route = " . $this->getId())
+            ->setGroup("p.id")
+            ->setHaving("laststate NOT IN('WTG','ACP','DST','FRW','CNC')")
+            ->run();
+        return is_array($result) ? $result : [];
     }
 
     public function __toString()

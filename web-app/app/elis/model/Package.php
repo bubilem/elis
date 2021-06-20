@@ -7,6 +7,7 @@ use elis\utils\db;
 
 /**
  * Package model class
+ * @version 0.2.0 210619 event and route info in getPackages, getLastLog()
  * @version 0.1.4 210614 getPackages, getLog
  * @version 0.0.1 210128 created
  */
@@ -110,24 +111,56 @@ class Package extends Main
      *
      * @return array
      */
-    public function getLog(): array
+    public function getLogList(): array
     {
         $query = (new db\Select())
             ->setSelect("l.*, e.type eventtype")
+            ->addSelect("IF(e.place IS NOT NULL,CONCAT_WS(', ',p.code),e.place_manual) placename")
+            ->addSelect("r.name routename, r.id routeid")
             ->setFrom("package_log l LEFT JOIN event e ON l.event = e.id")
+            ->addFrom("LEFT JOIN place p ON p.id = e.place")
+            ->addFrom("LEFT JOIN route r ON r.id = e.route")
             ->setWhere("l.package = " . $this->getId())
             ->setOrder('l.date DESC');
         $queryResult = $query->run();
         return is_array($queryResult) ? $queryResult : [];
     }
 
+
+    public function getLastLog(): PackageLog
+    {
+        $query = (new db\Select())
+            ->setSelect("id")
+            ->setFrom("package_log")
+            ->setWhere("package = " . $this->getId())
+            ->setOrder("date DESC")
+            ->setLimit("1");
+        $queryResult = $query->run();
+        return empty($queryResult[0]['id']) ? null : new PackageLog($queryResult[0]['id']);
+    }
+
     public static function getPackages(): array
     {
         $query = (new db\Select())
-            ->setSelect("p.*, SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
-            ->setFrom("package p JOIN package_log l ON p.id = l.package")
+            ->setSelect("p.*, CONCAT_WS('-',p.code, p.type) name")
+            ->addSelect("SUBSTRING_INDEX(GROUP_CONCAT(CONCAT_WS('|',CONCAT_WS('-',l.state,e.type,r.name), r.id) ORDER BY l.date DESC),',',1) laststate")
+            ->setFrom("package p LEFT JOIN package_log l ON p.id = l.package")
+            ->addFrom("LEFT JOIN event e ON l.event = e.id")
+            ->addFrom("LEFT JOIN route r ON e.route = r.id")
             ->setGroup('p.id')
             ->setOrder('p.id DESC');
+        $queryResult = $query->run();
+        return is_array($queryResult) ? $queryResult : [];
+    }
+
+    public static function getPackagesToLoad(): array
+    {
+        $query = (new db\Select())
+            ->setSelect("p.id, p.code, p.type, CONCAT_WS('-',p.code, p.type) name")
+            ->addSelect("SUBSTRING_INDEX(GROUP_CONCAT(l.state ORDER BY l.date DESC),',',1) laststate")
+            ->setFrom("package p JOIN package_log l ON p.id = l.package")
+            ->setHaving("laststate = 'WTG'")
+            ->setGroup("p.id");
         $queryResult = $query->run();
         return is_array($queryResult) ? $queryResult : [];
     }

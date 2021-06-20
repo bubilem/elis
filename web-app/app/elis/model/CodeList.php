@@ -4,7 +4,8 @@ namespace elis\model;
 
 /**
  * Code list class
- * @version 0.0.1 201128
+ * @version 0.2.0 210619 exists()
+ * @version 0.0.1 201128 creating
  */
 class CodeList
 {
@@ -82,5 +83,16 @@ class CodeList
             return $this->items[$code];
         }
         return null;
+    }
+
+    public function exists(string $state): bool
+    {
+        $exists = false;
+        foreach ($this->getItems() as $item) {
+            if ($item->getCode() == $state) {
+                return true;
+            }
+        }
+        return $exists;
     }
 }
