@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1:3306
--- Vytvořeno: Ned 20. čen 2021, 18:04
+-- Vytvořeno: Ned 20. čen 2021, 18:15
 -- Verze serveru: 5.7.26
 -- Verze PHP: 7.3.5
 
@@ -71,6 +71,261 @@ INSERT INTO `event` (`id`, `type`, `date`, `recorded`, `route`, `mileage`, `plac
 (24, 'ONW', '2021-06-20 14:31:01', 2, 1, NULL, NULL, '', ''),
 (25, 'RST', '2021-06-20 16:10:57', 2, 1, NULL, NULL, 'D10 Highway', '');
 
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `package`
+--
+
+DROP TABLE IF EXISTS `package`;
+CREATE TABLE IF NOT EXISTS `package` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL,
+  `type` char(3) DEFAULT NULL,
+  `width` decimal(6,3) NOT NULL COMMENT 'm',
+  `height` decimal(6,3) NOT NULL COMMENT 'm',
+  `lenght` decimal(6,3) NOT NULL COMMENT 'm',
+  `weight` decimal(10,2) NOT NULL COMMENT 'kg',
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code_UNIQUE` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `package`
+--
+
+INSERT INTO `package` (`id`, `code`, `type`, `width`, `height`, `lenght`, `weight`, `description`) VALUES
+(2, '001', 'C20', '2.438', '2.591', '6.058', '27800.00', ''),
+(3, '002', 'C20', '2.438', '2.591', '6.058', '27800.00', ''),
+(4, '003', 'C40', '2.438', '2.591', '12.192', '26199.00', ''),
+(5, '004', 'C40', '2.438', '2.591', '12.192', '26199.00', 'Electronics, gems, fragile'),
+(6, '005', 'C20', '2.438', '2.591', '6.058', '27800.00', 'robotics'),
+(7, '006', 'C20', '2.438', '2.591', '6.058', '27800.00', 'electronics'),
+(8, '007', 'C20', '2.438', '2.591', '6.058', '27800.00', '');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `package_log`
+--
+
+DROP TABLE IF EXISTS `package_log`;
+CREATE TABLE IF NOT EXISTS `package_log` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `package` int(10) UNSIGNED NOT NULL,
+  `state` char(3) DEFAULT NULL COMMENT 'code list package-states.json',
+  `event` int(10) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_package_log_package1_idx` (`package`),
+  KEY `fk_package_log_event1_idx` (`event`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `package_log`
+--
+
+INSERT INTO `package_log` (`id`, `date`, `package`, `state`, `event`) VALUES
+(1, '2021-06-12 10:54:55', 2, 'ACP', NULL),
+(2, '2021-06-12 11:00:10', 3, 'ACP', NULL),
+(3, '2021-06-12 11:27:55', 2, 'WTG', NULL),
+(4, '2021-06-12 11:31:25', 2, 'WTG', NULL),
+(5, '2021-06-12 14:37:58', 4, 'ACP', NULL),
+(6, '2021-06-12 14:38:02', 3, 'WTG', NULL),
+(8, '2021-06-12 17:15:54', 2, 'TRN', 4),
+(9, '2021-06-12 17:16:20', 3, 'TRN', 5),
+(11, '2021-06-12 18:56:54', 2, 'WTG', 7),
+(12, '2021-06-13 12:33:35', 3, 'WTG', 13),
+(13, '2021-06-13 12:38:21', 5, 'ACP', NULL),
+(14, '2021-06-13 12:38:31', 5, 'WTG', NULL),
+(15, '2021-06-13 12:46:30', 5, 'TRN', 14),
+(16, '2021-06-19 10:19:35', 5, 'WTG', 18),
+(17, '2021-06-19 10:21:20', 6, 'ACP', NULL),
+(18, '2021-06-19 10:22:01', 7, 'ACP', NULL),
+(19, '2021-06-19 10:22:06', 7, 'WTG', NULL),
+(20, '2021-06-19 10:22:07', 6, 'WTG', NULL),
+(21, '2021-06-19 10:22:27', 6, 'TRN', 19),
+(22, '2021-06-19 10:22:27', 7, 'TRN', 19),
+(23, '2021-06-19 14:09:12', 8, 'ACP', NULL),
+(24, '2021-06-19 14:17:42', 8, 'CNC', NULL),
+(25, '2021-06-19 14:18:52', 5, 'FRW', NULL),
+(26, '2021-06-19 15:24:02', 2, 'TRN', 21),
+(27, '2021-06-19 16:31:11', 2, 'WTG', NULL),
+(28, '2021-06-20 11:01:38', 2, 'WTG', 23),
+(29, '2021-06-20 11:02:15', 2, 'FRW', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `place`
+--
+
+DROP TABLE IF EXISTS `place`;
+CREATE TABLE IF NOT EXISTS `place` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `code` varchar(10) DEFAULT NULL,
+  `street` varchar(45) DEFAULT NULL,
+  `city_name` varchar(45) DEFAULT NULL,
+  `city_code` varchar(20) DEFAULT NULL,
+  `country_code` char(2) DEFAULT NULL COMMENT 'ISO 3166-1 alpha-2',
+  `gps` varchar(30) DEFAULT NULL COMMENT 'ISO 6709',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `place`
+--
+
+INSERT INTO `place` (`id`, `name`, `code`, `street`, `city_name`, `city_code`, `country_code`, `gps`) VALUES
+(1, 'Depot Prague', 'DP-PRG', '', 'Prague', '', 'CZ', ''),
+(2, 'Depot Varnsdorf', 'DP-VDF', '', 'Varnsdorf', '', 'CZ', ''),
+(3, 'Depot Gdańsk', 'DP-GDA', '', 'Gdańsk', '', 'PL', ''),
+(4, 'Gas station Varnsdorf', 'GS-VDF', '', 'Varnsdorf', '', 'CZ', ''),
+(5, 'Gas station Poznań', 'GS-POZ', '', 'Poznań', '', 'PL', ''),
+(6, 'Gas station Harachov', 'GS-HAR', '', 'Harachov', '', 'CZ', '50.7802, 15.4130');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `route`
+--
+
+DROP TABLE IF EXISTS `route`;
+CREATE TABLE IF NOT EXISTS `route` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `begin` datetime NOT NULL,
+  `end` datetime DEFAULT NULL,
+  `mileage` mediumint(9) DEFAULT NULL,
+  `description` text,
+  `vehicle` mediumint(8) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`),
+  KEY `fk_route_vehicle1_idx` (`vehicle`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `route`
+--
+
+INSERT INTO `route` (`id`, `name`, `begin`, `end`, `mileage`, `description`, `vehicle`) VALUES
+(1, 'R01', '2021-05-28 00:00:00', NULL, NULL, 'test', 1),
+(2, 'R02', '2021-01-29 00:00:00', '2021-06-20 11:15:40', NULL, 'test', 2),
+(3, 'R03', '2021-06-20 15:49:17', NULL, NULL, '', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `route_has_user`
+--
+
+DROP TABLE IF EXISTS `route_has_user`;
+CREATE TABLE IF NOT EXISTS `route_has_user` (
+  `route` int(10) UNSIGNED NOT NULL,
+  `user` mediumint(8) UNSIGNED NOT NULL,
+  `role` char(3) NOT NULL,
+  `assigned` datetime NOT NULL,
+  PRIMARY KEY (`route`,`user`),
+  KEY `fk_route_has_user_user1_idx` (`user`),
+  KEY `fk_route_has_user_route1_idx` (`route`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `route_has_user`
+--
+
+INSERT INTO `route_has_user` (`route`, `user`, `role`, `assigned`) VALUES
+(1, 1, 'DSP', '2021-06-20 15:57:11'),
+(1, 2, 'DRV', '2021-06-13 11:55:17'),
+(2, 1, 'DSP', '2021-06-13 11:30:04'),
+(2, 2, 'DRV', '2021-06-13 11:55:43'),
+(2, 3, 'DSP', '2021-06-13 11:55:34'),
+(2, 4, 'CDR', '2021-06-13 11:55:53'),
+(3, 3, 'DSP', '2021-06-20 15:49:17');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(40) DEFAULT NULL,
+  `name` varchar(45) NOT NULL,
+  `surname` varchar(65) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `user`
+--
+
+INSERT INTO `user` (`id`, `email`, `password`, `name`, `surname`) VALUES
+(1, 'michal.bubilek@skolavdf.cz', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'Michal', 'Bubílek'),
+(2, 'driver@jid-project.eu', 'fdda0c46f953c1a45bdc520849be1e4edf4e228c', 'John', 'Driver'),
+(3, 'dispatcher@jid-project.eu', 'bdf70eff0e4d79093bd5f318014dd13348b89cdb', 'Jack', 'Dispatcher'),
+(4, 'admin@jid-project.eu', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'Alan', 'Admin');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `user_has_role`
+--
+
+DROP TABLE IF EXISTS `user_has_role`;
+CREATE TABLE IF NOT EXISTS `user_has_role` (
+  `user` mediumint(8) UNSIGNED NOT NULL,
+  `role` char(3) NOT NULL,
+  `assigned` datetime NOT NULL,
+  PRIMARY KEY (`user`,`role`),
+  KEY `fk_user_has_role_user_idx` (`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `user_has_role`
+--
+
+INSERT INTO `user_has_role` (`user`, `role`, `assigned`) VALUES
+(1, 'ADM', '2021-06-13 11:48:39'),
+(1, 'DRV', '2021-06-13 11:48:39'),
+(1, 'DSP', '2021-06-13 11:48:39'),
+(2, 'DRV', '2021-06-13 11:47:54'),
+(3, 'DSP', '2021-06-13 11:49:40'),
+(4, 'ADM', '2021-06-13 11:50:59');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `vehicle`
+--
+
+DROP TABLE IF EXISTS `vehicle`;
+CREATE TABLE IF NOT EXISTS `vehicle` (
+  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `uid` varchar(10) NOT NULL,
+  `mileage` mediumint(8) UNSIGNED NOT NULL,
+  `avg_consuption` decimal(5,1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `vehicle`
+--
+
+INSERT INTO `vehicle` (`id`, `name`, `uid`, `mileage`, `avg_consuption`) VALUES
+(1, 'V01', '4U1 123456', 5024, '9.0'),
+(2, 'V02', '4U1 123457', 12, '12.2'),
+(3, 'V03', '4U1 123458', 200, '12.0');
+
 --
 -- Omezení pro exportované tabulky
 --
@@ -82,6 +337,32 @@ ALTER TABLE `event`
   ADD CONSTRAINT `fk_event_place1` FOREIGN KEY (`place`) REFERENCES `place` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
   ADD CONSTRAINT `fk_event_route1` FOREIGN KEY (`route`) REFERENCES `route` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_event_user1` FOREIGN KEY (`recorded`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+
+--
+-- Omezení pro tabulku `package_log`
+--
+ALTER TABLE `package_log`
+  ADD CONSTRAINT `fk_package_log_event1` FOREIGN KEY (`event`) REFERENCES `event` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `fk_package_log_package1` FOREIGN KEY (`package`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Omezení pro tabulku `route`
+--
+ALTER TABLE `route`
+  ADD CONSTRAINT `fk_route_vehicle1` FOREIGN KEY (`vehicle`) REFERENCES `vehicle` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+
+--
+-- Omezení pro tabulku `route_has_user`
+--
+ALTER TABLE `route_has_user`
+  ADD CONSTRAINT `fk_route_has_user_route1` FOREIGN KEY (`route`) REFERENCES `route` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_route_has_user_user1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Omezení pro tabulku `user_has_role`
+--
+ALTER TABLE `user_has_role`
+  ADD CONSTRAINT `fk_user_has_role_user` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
