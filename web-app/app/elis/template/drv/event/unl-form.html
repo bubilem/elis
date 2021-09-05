@@ -1,6 +1,16 @@
 <h2><a href="drv-event/log/{route}">{caption}</a></h2>
 <form action="drv-event/unl/{route}" method="POST">
   <div class="items">
+    <label for="mileage">Mileage ({oldmileage}km)</label>
+    <input
+      id="mileage"
+      type="number"
+      name="mileage"
+      value="{mileage}"
+      min="0"
+      max="999999"
+      step="1"
+    />
     <label for="">Packages</label>
     <div class="checkboxes">{packages}</div>
     <label for="">Place</label>

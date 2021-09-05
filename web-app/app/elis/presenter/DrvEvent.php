@@ -3,9 +3,6 @@
 namespace elis\presenter;
 
 use elis\model;
-use elis\model\CodeList;
-use elis\model\CodeListItem;
-use elis\model\Event;
 use elis\utils;
 use elis\utils\db;
 
@@ -35,8 +32,13 @@ class DrvEvent extends Driver
             $this->table();
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         $formTmplt =  new utils\Template("drv/event/lod-form.html", [
             'caption' => ' Route ' . $route . ' - Loading packages ',
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getid()
         ]);
         $options = '';
@@ -99,9 +101,13 @@ class DrvEvent extends Driver
             $this->log($route);
             return;
         }
-        $ev = new Event("LOD");
+        $ev = new model\Event("LOD");
         $ev->setRecorded($this->user->getId());
         $ev->setRoute($route->getId());
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
+        $ev->setMileage($mileage);
         $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
         if ($place) {
             $ev->setPlace($place);
@@ -115,6 +121,10 @@ class DrvEvent extends Driver
                 $pck = new model\Package($id);
                 if ($pck->getId()) {
                     $pck->createLog('TRN', $ev)->save();
+                }
+                if ($mileage > $oldmileage) {
+                    $vehicle->setMileage($mileage)->save();
+                    $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
                 }
             }
         } else {
@@ -136,8 +146,13 @@ class DrvEvent extends Driver
             $this->table();
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         $formTmplt =  new utils\Template("drv/event/unl-form.html", [
             'caption' => ' Route ' . $route . ' - Unloading packages ',
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getid()
         ]);
         $options = '';
@@ -200,9 +215,13 @@ class DrvEvent extends Driver
             $this->log($route);
             return;
         }
-        $ev = new Event("UNL");
+        $ev = new model\Event("UNL");
         $ev->setRecorded($this->user->getId());
         $ev->setRoute($route->getId());
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
+        $ev->setMileage($mileage);
         $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
         if ($place) {
             $ev->setPlace($place);
@@ -217,6 +236,10 @@ class DrvEvent extends Driver
                 if ($pck->getId()) {
                     $pck->createLog('WTG', $ev)->save();
                 }
+            }
+            if ($mileage > $oldmileage) {
+                $vehicle->setMileage($mileage)->save();
+                $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
             }
         } else {
             $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
@@ -239,8 +262,8 @@ class DrvEvent extends Driver
             return;
         }
         $eventType = strtoupper($this->getParam(2));
-        $eventTypes = new CodeList('event-types.json');
-        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
+        $eventTypes = new model\CodeList('event-types.json');
+        if (!($eventTypes->getItem($eventType) instanceof model\CodeListItem)) {
             $this->drvTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Event type does not exist.'
@@ -248,9 +271,12 @@ class DrvEvent extends Driver
             $this->log($route);
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT)) {
             if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT) == $route->getId()) {
-                $ev = new Event($eventType);
+                $ev = new model\Event($eventType);
                 $ev->setRecorded($this->user->getId());
                 $ev->setRoute($route->getId());
                 $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
@@ -259,9 +285,14 @@ class DrvEvent extends Driver
                 }
                 $ev->setPlaceManual(filter_input(INPUT_POST, 'place_manual', FILTER_SANITIZE_STRING));
                 $ev->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+                $ev->setMileage($mileage);
                 if ($ev->save()) {
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has been created.');
                     $messageTmplt->setData('type', 'suc');
+                    if ($mileage > $oldmileage) {
+                        $vehicle->setMileage($mileage)->save();
+                        $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
+                    }
                 } else {
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
                     $messageTmplt->setData('type', 'err');

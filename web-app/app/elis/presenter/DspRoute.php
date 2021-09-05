@@ -49,6 +49,7 @@ class DspRoute extends Dispatcher
         $route->setName(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
         $route->setVehicle(filter_input(INPUT_POST, 'vehicle', FILTER_SANITIZE_NUMBER_INT));
         $route->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        $route->setMileage(0);
         $messageTmplt = new utils\Template("other/message.html");
         $sameNameRoute = (new db\Select())
             ->setSelect('id')

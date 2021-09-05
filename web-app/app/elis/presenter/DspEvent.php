@@ -3,9 +3,6 @@
 namespace elis\presenter;
 
 use elis\model;
-use elis\model\CodeList;
-use elis\model\CodeListItem;
-use elis\model\Event;
 use elis\utils;
 use elis\utils\db;
 
@@ -35,8 +32,13 @@ class DspEvent extends Dispatcher
             $this->table();
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         $formTmplt =  new utils\Template("dsp/event/lod-form.html", [
             'caption' => ' Route ' . $route . ' - Loading packages ',
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getid()
         ]);
         $options = '';
@@ -99,9 +101,13 @@ class DspEvent extends Dispatcher
             $this->log($route);
             return;
         }
-        $ev = new Event("LOD");
+        $ev = new model\Event("LOD");
         $ev->setRecorded($this->user->getId());
         $ev->setRoute($route->getId());
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
+        $ev->setMileage($mileage);
         $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
         if ($place) {
             $ev->setPlace($place);
@@ -116,6 +122,10 @@ class DspEvent extends Dispatcher
                 if ($pck->getId()) {
                     $pck->createLog('TRN', $ev)->save();
                 }
+            }
+            if ($mileage > $oldmileage) {
+                $vehicle->setMileage($mileage)->save();
+                $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
             }
         } else {
             $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.');
@@ -136,8 +146,13 @@ class DspEvent extends Dispatcher
             $this->table();
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         $formTmplt =  new utils\Template("dsp/event/unl-form.html", [
             'caption' => ' Route ' . $route . ' - Unloading packages ',
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getid()
         ]);
         $options = '';
@@ -200,9 +215,13 @@ class DspEvent extends Dispatcher
             $this->log($route);
             return;
         }
-        $ev = new Event("UNL");
+        $ev = new model\Event("UNL");
         $ev->setRecorded($this->user->getId());
         $ev->setRoute($route->getId());
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
+        $ev->setMileage($mileage);
         $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
         if ($place) {
             $ev->setPlace($place);
@@ -217,6 +236,10 @@ class DspEvent extends Dispatcher
                 if ($pck->getId()) {
                     $pck->createLog('WTG', $ev)->save();
                 }
+            }
+            if ($mileage > $oldmileage) {
+                $vehicle->setMileage($mileage)->save();
+                $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
             }
         } else {
             $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
@@ -239,8 +262,8 @@ class DspEvent extends Dispatcher
             return;
         }
         $eventType = strtoupper($this->getParam(2));
-        $eventTypes = new CodeList('event-types.json');
-        if (!($eventTypes->getItem($eventType) instanceof CodeListItem)) {
+        $eventTypes = new model\CodeList('event-types.json');
+        if (!($eventTypes->getItem($eventType) instanceof model\CodeListItem)) {
             $this->dspTmplt->addData('content', $messageTmplt->setAllData([
                 'type' => 'err',
                 'message' => 'Event type does not exist.'
@@ -248,9 +271,12 @@ class DspEvent extends Dispatcher
             $this->log($route);
             return;
         }
+        $vehicle = new model\Vehicle($route->getVehicle());
+        $oldmileage = $vehicle->getMileage();
+        $mileage = filter_input(INPUT_POST, 'mileage', FILTER_VALIDATE_INT) ? filter_input(INPUT_POST, 'mileage', FILTER_SANITIZE_NUMBER_INT) : $oldmileage;
         if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT)) {
             if (filter_input(INPUT_POST, 'route', FILTER_SANITIZE_NUMBER_INT) == $route->getId()) {
-                $ev = new Event($eventType);
+                $ev = new model\Event($eventType);
                 $ev->setRecorded($this->user->getId());
                 $ev->setRoute($route->getId());
                 $place = filter_input(INPUT_POST, 'place', FILTER_SANITIZE_NUMBER_INT);
@@ -259,9 +285,14 @@ class DspEvent extends Dispatcher
                 }
                 $ev->setPlaceManual(filter_input(INPUT_POST, 'place_manual', FILTER_SANITIZE_STRING));
                 $ev->setDescription(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+                $ev->setMileage($mileage);
                 if ($ev->save()) {
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has been created.');
                     $messageTmplt->setData('type', 'suc');
+                    if ($mileage > $oldmileage) {
+                        $vehicle->setMileage($mileage)->save();
+                        $route->setMileage($route->getMileage() + ($mileage - $oldmileage))->save();
+                    }
                 } else {
                     $messageTmplt->setData('message', 'Event ' . $ev . ' has not been created.' . db\MySQL::getLastError());
                     $messageTmplt->setData('type', 'err');
@@ -279,6 +310,8 @@ class DspEvent extends Dispatcher
         $formTmplt =  new utils\Template("dsp/event/form.html", [
             'caption' => ' Route ' . $route . ' - ' . $eventType . ' - ' . ucfirst($eventTypes->getItem($eventType)->getName()),
             'eventType' =>  strtolower($eventType),
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getId()
         ]);
         $options = '';
@@ -333,7 +366,6 @@ class DspEvent extends Dispatcher
                 ]) . ' ';
             }
         }
-
         $tableRowTmplt = new utils\Template("dsp/event/event-table-row.html");
         $rows = '';
         foreach ($route->getLog() as $record) {
@@ -343,6 +375,7 @@ class DspEvent extends Dispatcher
                 'type' => $record['type'],
                 'packages' => $record['packages'],
                 'user' => $record['username'],
+                'mileage' => $record['mileage'],
                 'place' => $record['placename'],
                 'description' => $record['description']
             ]);

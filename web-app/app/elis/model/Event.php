@@ -28,6 +28,13 @@ class Event extends Main
      */
     public function load($pk): bool
     {
+        $result = (new db\Select())
+            ->setSelect("*")->setFrom('event')->setWhere('id = ' . intval($pk))
+            ->run();
+        if (isset($result[0]) && is_array($result[0]) && !empty($result[0])) {
+            $this->data = $result[0];
+            return true;
+        }
         return false;
     }
 
@@ -44,6 +51,7 @@ class Event extends Main
             'recorded' => $this->getRecorded(),
             'route' => $this->getRoute(),
             'place' => $this->getPlace(),
+            'mileage' => $this->getMileage(),
             'place_manual' => $this->getPlaceManual(),
             'description' => $this->getDescription()
         ];
