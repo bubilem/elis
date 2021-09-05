@@ -373,6 +373,7 @@ class DrvEvent extends Driver
                 'type' => $record['type'],
                 'packages' => $record['packages'],
                 'user' => $record['username'],
+                'mileage' => $record['mileage'],
                 'place' => $record['placename'],
                 'description' => $record['description']
             ]);
