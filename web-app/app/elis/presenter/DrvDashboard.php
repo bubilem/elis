@@ -2,7 +2,7 @@
 
 namespace elis\presenter;
 
-use elis\utils;
+use elis\model;
 
 /**
  * Driver dashboard presenter
@@ -15,7 +15,10 @@ class DrvDashboard extends Driver
     {
         parent::__construct($params);
         $this->pageTmplt->setData('title', "Driver :: Dashboard");
-        $this->drvTmplt->setData('content', "Hello in driver and co-driver section.");
+        $list = new model\CodeList("countries.json");
+        $this->drvTmplt->setData('content', "Hello in driver and co-driver section."  .
+            (new model\CodeList("event-types.json"))->legendToStr("Event types") .
+            (new model\CodeList("countries.json"))->legendToStr("Countries"));
     }
 
     protected function table()

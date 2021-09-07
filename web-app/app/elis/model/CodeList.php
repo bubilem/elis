@@ -2,6 +2,8 @@
 
 namespace elis\model;
 
+use elis\utils;
+
 /**
  * Code list class
  * @version 0.2.0 210619 exists()
@@ -94,5 +96,23 @@ class CodeList
             }
         }
         return $exists;
+    }
+
+
+    public function legendToStr(string $caption): string
+    {
+        $itemTmplt = new utils\Template("other/legend-item.html");
+        $items = '';
+        foreach ($this->getItems() as $item) {
+            $itemTmplt->clearData()->setAllData([
+                'code' => $item->getCode(),
+                'name' => $item->getName()
+            ]);
+            $items .= $itemTmplt;
+        }
+        return strval(new utils\Template("other/legend.html", [
+            'caption' => $caption,
+            'content' => $items
+        ]));
     }
 }

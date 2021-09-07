@@ -2,7 +2,7 @@
 
 namespace elis\presenter;
 
-use elis\utils;
+use elis\model;
 
 /**
  * Dispatcher dashboard presenter
@@ -15,7 +15,14 @@ class DspDashboard extends Dispatcher
     {
         parent::__construct($params);
         $this->pageTmplt->setData('title', "Dispatcher :: Dashboard");
-        $this->dspTmplt->setData('content', "Hello in dispatcher administration.");
+        $this->dspTmplt->setData(
+            'content',
+            "Hello in dispatcher administration." .
+                (new model\CodeList("event-types.json"))->legendToStr("Event types") .
+                (new model\CodeList("package-states.json"))->legendToStr("Package states") .
+                (new model\CodeList("package-types.json"))->legendToStr("Package types") .
+                (new model\CodeList("countries.json"))->legendToStr("Countries")
+        );
     }
 
     protected function table()

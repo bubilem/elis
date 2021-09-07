@@ -25,4 +25,12 @@ table {
       opacity: 0.4;
     }
   }
+  caption {
+    text-align: left;
+    font-weight: $bold-weight;
+  }
+  &.legend {
+    margin: 1.5em 0;
+    font-size: 0.8em;
+  }
 }

@@ -2,7 +2,7 @@
 
 namespace elis\presenter;
 
-use elis\utils;
+use elis\model;
 
 /**
  * Administration dashboard presenter
@@ -15,7 +15,17 @@ class AdmDashboard extends Administration
     {
         parent::__construct($params);
         $this->pageTmplt->setData('title', "Admin :: Dashboard");
-        $this->adminTmplt->setData('content', "Hello in ELIS administration.");
+        $this->adminTmplt->setData(
+            'content',
+            "Hello in ELIS administration." .
+                (new model\CodeList("user-roles.json"))->legendToStr("User roles") .
+                (new model\CodeList("countries.json"))->legendToStr("Countries") .
+                (new model\CodeList("event-types.json"))->legendToStr("Event types") .
+                (new model\CodeList("package-states.json"))->legendToStr("Package states") .
+                (new model\CodeList("package-types.json"))->legendToStr("Package types") .
+                (new model\CodeList("languages.json"))->legendToStr("Languages")
+
+        );
     }
 
     protected function newForm($model = null)

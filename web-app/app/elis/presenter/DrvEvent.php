@@ -310,6 +310,8 @@ class DrvEvent extends Driver
         $formTmplt =  new utils\Template("drv/event/form.html", [
             'caption' => ' Route ' . $route . ' - ' . $eventType . ' - ' . ucfirst($eventTypes->getItem($eventType)->getName()),
             'eventType' =>  strtolower($eventType),
+            'mileage' => $mileage,
+            'oldmileage' => $oldmileage,
             'route' => $route->getId()
         ]);
         $options = '';
