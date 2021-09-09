@@ -3,6 +3,9 @@ table {
   width: 100%;
   margin: 0.5em 0;
   tr {
+    &.no-top-border td {
+      border-top: $background-color 2px solid;
+    }
     th,
     td {
       text-align: left;
@@ -16,6 +19,9 @@ table {
     td {
       &.num {
         text-align: right;
+      }
+      &.small-text {
+        font-size: 0.8em;
       }
     }
     &:hover > td {
@@ -32,5 +38,9 @@ table {
   &.legend {
     margin: 1.5em 0;
     font-size: 0.8em;
+  }
+  .btn {
+    margin: 0.1em;
+    white-space: nowrap;
   }
 }

@@ -4,11 +4,13 @@
   <td>{state}</td>
   <td>{dimension}</td>
   <td>{weight}</td>
-  <td>{description}</td>
-  <td>
+  <td rowspan="2">
     <a class="btn" href="dsp-package/log/{id}">&#9776; log</a>
     {edt}
     <a class="btn" href="dsp-package/delete-question/{id}">&#128465; del</a>
     {wtg} {dst} {frw} {cnc}
   </td>
+</tr>
+<tr class="{class} no-top-border">
+  <td colspan="5" class="small-text">{description}</td>
 </tr>

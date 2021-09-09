@@ -34,7 +34,8 @@ abstract class Dispatcher extends Main
             "dsp-dashboard" => "dashboard",
             "dsp-route" => "routes",
             "dsp-package" => "packages",
-            "dsp-event" => "events"
+            "dsp-event" => "events",
+            "dsp-drivers" => "drivers"
         ] as $href => $label) {
             $menuItem->clearData()->setAllData([
                 'href' => $href,
