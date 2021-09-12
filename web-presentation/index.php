@@ -1,7 +1,8 @@
 <?php
-$ver = 210613;
+$ver = 210911;
 $pages = json_decode(file_get_contents("pages/register.json"), true);
 $articles = json_decode(file_get_contents("blog/register.json"), true);
+krsort($articles);
 $page = strtolower(filter_input(INPUT_GET, "p"));
 $article = strtolower(filter_input(INPUT_GET, "a"));
 if (empty($page)) {
@@ -100,10 +101,11 @@ if ($article) {
                         foreach ($articles as $key => $val) {
                             echo '<li>';
                             if ($key != $article) {
-                                echo '<a href="?a=' . $key . '">' . $val["menu-item-name"]  . '</a>';
+                                echo '<p><a href="?a=' . $key . '">' . $val["menu-item-name"]  . '</a></p>';
                             } else {
-                                echo $val["menu-item-name"];
+                                echo '<p>' . $val["menu-item-name"] . '</p>';
                             }
+                            echo '<p class="date">' . $val["date"] . '</p>';
                             echo '</li>';
                         }
                         echo '</ul>';

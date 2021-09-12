@@ -46,5 +46,47 @@
     "menu-item-name": "App update 0.2.0",
     "intro": "In this update, we've done a lot around managing packages and routes.",
     "date": "20. 6. 2021"
+  },
+  "09-2021-06-21": {
+    "title": "CZ Visit - The first day",
+    "menu-item-name": "CZ Visit - Monday",
+    "intro": "The first day of the project started with the polish team arriving at 3pm to Varnsdorf.",
+    "date": "21. 6. 2021"
+  },
+  "10-2021-06-22": {
+    "title": "CZ  Visit - Noprosu, Kocour, Workshop",
+    "menu-item-name": "CZ Visit - Tuesday",
+    "intro": "In the morning at 9:00 went on our way to logistics firm NOPROSU, where they showed us everything about logistics and truck transport, which was very interesting and educative.",
+    "date": "22. 6. 2021"
+  },
+  "11-2021-06-23": {
+    "title": "CZ Visit - Trip to Prague",
+    "menu-item-name": "CZ Visit - Wednesday",
+    "intro": "During wednesday we've gone to Prague..",
+    "date": "23. 6. 2021"
+  },
+  "12-2021-06-24": {
+    "title": "CZ  Visit - Haas and Sohn, Workshop, Bowling",
+    "menu-item-name": "CZ Visit - Thursday",
+    "intro": "In the morning we visited a logistic company Haas and Sohn in Varnsdorf that makes and delivers stoves.",
+    "date": "24. 6. 2021"
+  },
+  "13-2021-06-25": {
+    "title": "CZ Visit - Saying our goodbyes",
+    "menu-item-name": "CZ Visit - Friday",
+    "intro": "In the morning we visited a logistic company Haas and Sohn in Varnsdorf that makes and delivers stoves.",
+    "date": "25. 6. 2021"
+  },
+  "14-videotutorial": {
+    "title": "Video tutorial",
+    "menu-item-name": "Video tutorial",
+    "intro": "",
+    "date": "1. 9. 2021"
+  },
+  "15-app-update-0-2-4": {
+    "title": "Web application update 0.2.4",
+    "menu-item-name": "App update 0.2.4",
+    "intro": "We've improved the look of the tables and added basic driver statistics.",
+    "date": "9. 9. 2021"
   }
 }

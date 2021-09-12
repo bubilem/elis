@@ -9,7 +9,9 @@
   }
   article {
     .date {
+      font-family: "Oswald", sans-serif;
       font-size: 0.8em;
+      font-weight: $bold-weight;
     }
     > ul {
       list-style-type: square;
@@ -40,6 +42,13 @@
         font-size: 1.2em;
         font-weight: $bold-weight;
         text-transform: uppercase;
+        p {
+          margin: 0;
+          padding: 0;
+          &.date {
+            font-size: 0.6em;
+          }
+        }
       }
     }
   }
