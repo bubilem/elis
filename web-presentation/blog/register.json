@@ -62,7 +62,7 @@
   "11-2021-06-23": {
     "title": "CZ Visit - Trip to Prague",
     "menu-item-name": "CZ Visit - Wednesday",
-    "intro": "During wednesday we've gone to Prague..",
+    "intro": "During wednesday we've gone to Prague...",
     "date": "23. 6. 2021"
   },
   "12-2021-06-24": {
@@ -80,7 +80,7 @@
   "14-videotutorial": {
     "title": "Video tutorial",
     "menu-item-name": "Video tutorial",
-    "intro": "",
+    "intro": "We have created an 11-minute video manual for controlling the basic functions of the ELIS system.",
     "date": "1. 9. 2021"
   },
   "15-app-update-0-2-4": {
@@ -88,5 +88,53 @@
     "menu-item-name": "App update 0.2.4",
     "intro": "We've improved the look of the tables and added basic driver statistics.",
     "date": "9. 9. 2021"
+  },
+  "16-2021-09-13": {
+    "title": "PL Visit - Arrival of the czech squad",
+    "menu-item-name": "PL Visit - Monday",
+    "intro": "Arrival of the czech group to Ostróda and more info about the day.",
+    "date": "13. 9. 2021"
+  },
+  "17-2021-09-14": {
+    "title": "PL visit - The second day",
+    "menu-item-name": "PL visit - Tuesday",
+    "intro": "Czech and polish teams visit museum and port",
+    "date": "14. 9. 2021"
+  },
+  "18-2021-09-15": {
+    "title": "PL Visit - Trip to Sweden",
+    "menu-item-name": "PL visit - Wednesday",
+    "intro": "Our time in Sweden...",
+    "date": "15. 9. 2021"
+  },
+  "19-2021-09-16": {
+    "title": "PL Visit - Ship Museum, Aquarium, River port, Workshop",
+    "menu-item-name": "PL VISIT - Thurday",
+    "intro": "Ship Museum, Aquarium, River port, Workshop",
+    "date": "16. 9. 2021"
+  },
+  "20-2021-09-17": {
+    "title": "PL Visit- Saying our goodbyes and way home",
+    "menu-item-name": "PL Visit- Friday",
+    "intro": "On Friday the 17th we had our last day with the polish group.",
+    "date": "17. 9. 2021"
+  },
+  "21-dictionary": {
+    "title": "Logistical dictionary",
+    "menu-item-name": "Logistical dictionary",
+    "intro": "We have together created logistical dictionary.",
+    "date": "20. 9. 2021"
+  },
+  "22-polish-fictional-company": {
+    "title": "Polish students work as a fictional company",
+    "menu-item-name": "Polish fictional company",
+    "intro": "Polish students work in ELIS as a fictional company.",
+    "date": "23. 9. 2021"
+  },
+  "23-video": {
+    "title": "Project video",
+    "menu-item-name": "Project video",
+    "intro": "Video that captures the whole project in a 6 minutes.",
+    "date": "6. 10. 2021"
   }
 }

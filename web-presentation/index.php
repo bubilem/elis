@@ -1,5 +1,5 @@
 <?php
-$ver = 210911;
+$ver = 211007;
 $pages = json_decode(file_get_contents("pages/register.json"), true);
 $articles = json_decode(file_get_contents("blog/register.json"), true);
 krsort($articles);
@@ -24,7 +24,7 @@ if ($article) {
     echo '<base href="' . (in_array($_SERVER['REMOTE_ADDR'], [
         '127.0.0.1',
         '::1'
-    ]) ? 'http://projects/elis/web-presentation/' : 'https://www.jid-project.eu/') . '">' . "\n";
+    ]) ? 'http://webdev/elis/web-presentation/' : 'https://www.jid-project.eu/') . '">' . "\n";
     echo '<title>'
         . ($article  != null ? $articles[$article]['menu-item-name'] . ' | Blog' : $pages[$page]['title'])
         . ' | JID project</title>';
